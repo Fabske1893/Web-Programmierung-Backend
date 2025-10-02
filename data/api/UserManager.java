@@ -1,5 +1,6 @@
 Interface Usermanager {
-    void loginUser(String username);
-    void logoffUser(String username);
+    String loginUser(String email, String password);
+    boolean logoffUser(String email);
+    boolean registerUser(User user);
     
 }
