@@ -77,10 +77,21 @@ public class PostgresRecipeManagerImpl implements RecipeManager  {
                     "id SERIAL PRIMARY KEY, " +
                     "name varchar(100) NOT NULL, " +
                     "picture varchar(100) NOT NULL, " +
-                    "ingredients varchar(100) NOT NULL, " +
-                    "instructions varchar(100) NOT NULL, " +
+                    "ingredients varchar(1000) NOT NULL, " +
+                    "instructions varchar(1000) NOT NULL, " +
                     "difficulty int NOT NULL, " +
                     "category varchar(100) NOT NULL )");
+        
+        String createIngredientsTable = "CREATE TABLE recipe_ingredients (" +
+                                    "id SERIAL PRIMARY KEY, " +
+                                    "recipe_id INT NOT NULL, " +
+                                    "amount int NOT NULL, " + 
+                                    "unit VARCHAR(50) NOT NULL, " +
+                                    "ingredient_name VARCHAR(100) NOT NULL, " + 
+                                    //"FOREIGN KEY (recipe_id) REFERENCES recipes(id) ON DELETE CASCADE)"; 
+
+
+            stmt.executeUpdate(createIngredientsTable);
 
         } catch (SQLException e) {
             e.printStackTrace();
