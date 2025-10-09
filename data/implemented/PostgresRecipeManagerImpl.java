@@ -73,14 +73,16 @@ public class PostgresRecipeManagerImpl implements RecipeManager  {
             stmt = connection.createStatement();
 
             stmt.executeUpdate("DROP TABLE IF EXISTS recipes");
-            stmt.executeUpdate("CREATE TABLE tasks (" +
-                    "id SERIAL PRIMARY KEY, " +
-                    "name varchar(100) NOT NULL, " +
-                    "picture varchar(100) NOT NULL, " +
-                    "ingredients varchar(1000) NOT NULL, " +
-                    "instructions varchar(1000) NOT NULL, " +
-                    "difficulty int NOT NULL, " +
-                    "category varchar(100) NOT NULL )");
+            stmt.executeUpdate("DROP TABLE IF EXISTS recipe_ingredients");
+
+        String createRecipeTable ="CREATE TABLE tasks (" +
+                                    "id SERIAL PRIMARY KEY, " +
+                                    "name varchar(100) NOT NULL, " +
+                                    "picture varchar(100) NOT NULL, " +
+                                    "ingredients varchar(1000) NOT NULL, " +
+                                    "instructions varchar(1000) NOT NULL, " +
+                                    "difficulty int NOT NULL, " +
+                                    "category varchar(100) NOT NULL )"
         
         String createIngredientsTable = "CREATE TABLE recipe_ingredients (" +
                                     "id SERIAL PRIMARY KEY, " +
@@ -90,8 +92,10 @@ public class PostgresRecipeManagerImpl implements RecipeManager  {
                                     "ingredient_name VARCHAR(100) NOT NULL, " + 
                                     //"FOREIGN KEY (recipe_id) REFERENCES recipes(id) ON DELETE CASCADE)"; 
 
-
+            
+            stmt.executeUpdate(createRecipeTable);
             stmt.executeUpdate(createIngredientsTable);
+            
 
         } catch (SQLException e) {
             e.printStackTrace();
