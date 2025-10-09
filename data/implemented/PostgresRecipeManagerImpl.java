@@ -33,19 +33,19 @@ public class PostgresRecipeManagerImpl implements RecipeManager  {
 
 
    
-/* 
+
     @Override
     public boolean addRecipe(Recipe recipe) {
         final Logger createRecipeLogger = Logger.getLogger("CreateRecipeLogger");
-        createRecipeLogger.log(Level.INFO,"Start creating task " + task.getName());
+        createRecipeLogger.log(Level.INFO,"Start creating a Recipe " + task.getName());
         Statement stmt = null;
         Connection connection = null;
 
         try {
             connection = basicDataSource.getConnection();
             stmt = connection.createStatement();
-            String udapteSQL = "INSERT into tasks (name, priority, email) VALUES (" +
-                    "'" + task.getName() + "', " + task.getPriority() + ", '" + task.getEmail() + "')";
+            String udapteSQL = "INSERT into recipes (name, picture, ingredients, instructions, level, category ) VALUES (" +
+                    "'" + task.getName() + "', " + task.getPictureUrl() + "', " + task.getIngredients() + "', " + task.getInstructions() + "', " + task.getDifficultyLevel() +"', " + task.getCategory() +"')";
             stmt.executeUpdate(udapteSQL);
 
             stmt.close();
@@ -63,7 +63,8 @@ public class PostgresRecipeManagerImpl implements RecipeManager  {
         return true;
     }
 
-    public void createTaskTable() {
+    //nochmal anschauen sollte ja nur 1 mal ausgeführt werden oder?
+    public void createRecipeTable() {
         // Be carefull: It deletes data if table already exists.
         Statement stmt = null;
         Connection connection = null;
@@ -71,12 +72,15 @@ public class PostgresRecipeManagerImpl implements RecipeManager  {
             connection = basicDataSource.getConnection();
             stmt = connection.createStatement();
 
-            stmt.executeUpdate("DROP TABLE IF EXISTS tasks");
+            stmt.executeUpdate("DROP TABLE IF EXISTS recipes");
             stmt.executeUpdate("CREATE TABLE tasks (" +
                     "id SERIAL PRIMARY KEY, " +
                     "name varchar(100) NOT NULL, " +
-                    "priority int NOT NULL, " +
-                    "email varchar(100) NOT NULL)");
+                    "picture varchar(100) NOT NULL, " +
+                    "ingredients varchar(100) NOT NULL, " +
+                    "instructions varchar(100) NOT NULL, " +
+                    "difficulty int NOT NULL, " +
+                    "category varchar(100) NOT NULL )");
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -90,5 +94,5 @@ public class PostgresRecipeManagerImpl implements RecipeManager  {
 
     }
 
-*/
+
 }

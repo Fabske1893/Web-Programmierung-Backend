@@ -9,4 +9,6 @@ public interface Recipe {
     void setInstructions(String instructions);
     int getDifficultyLevel();
     void setDifficultyLevel(int level);
+    String getCategory();
+    void setCategory(String category);
 }
