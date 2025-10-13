@@ -12,9 +12,9 @@ import java.util.logging.Logger;
 
 public class PostgresRecipeManagerImpl implements RecipeManager  {
 
-    String databaseURL = "";
-    String username = "";
-    String password = "";
+    String databaseURL = "postgres://u66omc8i022k92:p7fc989cf794cb2f78c6d16c2f2704823c9119a9cf51adc666a267dae92e98493@c18qegamsgjut6.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com:5432/d4bjcmj7120lb0";
+    String username = "u66omc8i022k92";
+    String password = "p7fc989cf794cb2f78c6d16c2f2704823c9119a9cf51adc666a267dae92e98493";
     BasicDataSource basicDataSource;
 
     // Singleton
