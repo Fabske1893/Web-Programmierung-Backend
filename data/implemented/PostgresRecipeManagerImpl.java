@@ -1,3 +1,4 @@
+package data.implemented;
 import data.api.Recipe;
 import data.api.RecipeManager;
 import org.apache.commons.dbcp2.BasicDataSource;
@@ -44,7 +45,6 @@ public class PostgresRecipeManagerImpl implements RecipeManager  {
                 // SQL-Befehl mit Platzhaltern (?)
         String insertSQL = "INSERT INTO recipes (name, picture, ingredients, instructions, difficulty, category) VALUES (?, ?, ?, ?, ?, ?)";
 
-        // try-with-resources schließt die Ressourcen automatisch
         try (Connection connection = basicDataSource.getConnection();
             PreparedStatement pstmt = connection.prepareStatement(insertSQL)) {
 

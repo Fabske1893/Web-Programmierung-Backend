@@ -1,0 +1,20 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+
+repositories {
+    mavenCentral()
+}
+
+// LISTE der Bibliotheken, die das Projekt benötigt
+dependencies {
+    
+    implementation 'com.sun.mail:jakarta.mail:2.0.1'
+
+}
+
+application {
+    mainClass = '' // Passe den Hauptklassenpfad an
+}
