@@ -43,7 +43,7 @@ public class EmailService {
         EmailService emailService = new EmailService();
         
         
-        String empfaengerEmail = "empfaenger@example.com";
+        String empfaengerEmail = "";
         
         
 
