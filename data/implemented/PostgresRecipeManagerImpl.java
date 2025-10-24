@@ -1,5 +1,6 @@
-import data.api.Task;
-import data.api.TaskManager;
+package data.implemented;
+import data.api.Recipe;
+import data.api.RecipeManager;
 import org.apache.commons.dbcp2.BasicDataSource;
 
 import java.net.URI;
@@ -12,9 +13,9 @@ import java.util.logging.Logger;
 
 public class PostgresRecipeManagerImpl implements RecipeManager  {
 
-    String databaseURL = "";
-    String username = "";
-    String password = "";
+    String databaseURL = "jdbc:postgresql://u66omc8i022k92:p7fc989cf794cb2f78c6d16c2f2704823c9119a9cf51adc666a267dae92e98493@c18qegamsgjut6.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com:5432/d4bjcmj7120lb0";
+    String username = "u66omc8i022k92";
+    String password = "p7fc989cf794cb2f78c6d16c2f2704823c9119a9cf51adc666a267dae92e98493";
     BasicDataSource basicDataSource;
 
     // Singleton
@@ -25,7 +26,7 @@ public class PostgresRecipeManagerImpl implements RecipeManager  {
         basicDataSource.setUsername(username);
         basicDataSource.setPassword(password);
     }
-    public static PostgresRecipeManagerImpl getPostgresRecipeManagerImpl() {
+    public static synchronized PostgresRecipeManagerImpl getPostgresRecipeManagerImpl() {
         if (postgresRecipeManager == null)
             postgresRecipeManager = new PostgresRecipeManagerImpl();
         return postgresRecipeManager;
@@ -37,30 +38,31 @@ public class PostgresRecipeManagerImpl implements RecipeManager  {
     @Override
     public boolean addRecipe(Recipe recipe) {
         final Logger createRecipeLogger = Logger.getLogger("CreateRecipeLogger");
-        createRecipeLogger.log(Level.INFO,"Start creating a Recipe " + task.getName());
+        createRecipeLogger.log(Level.INFO,"Start creating a Recipe " + recipe.getName());
         Statement stmt = null;
         Connection connection = null;
 
-        try {
-            connection = basicDataSource.getConnection();
-            stmt = connection.createStatement();
-            String udapteSQL = "INSERT into recipes (name, picture, ingredients, instructions, level, category ) VALUES (" +
-                    "'" + task.getName() + "', " + task.getPictureUrl() + "', " + task.getIngredients() + "', " + task.getInstructions() + "', " + task.getDifficultyLevel() +"', " + task.getCategory() +"')";
-            stmt.executeUpdate(udapteSQL);
+                // SQL-Befehl mit Platzhaltern (?)
+        String insertSQL = "INSERT INTO recipes (name, picture, ingredients, instructions, difficulty, category) VALUES (?, ?, ?, ?, ?, ?)";
 
-            stmt.close();
-            connection.close();
+        try (Connection connection = basicDataSource.getConnection();
+            PreparedStatement pstmt = connection.prepareStatement(insertSQL)) {
+
+            // Werte sicher an die Platzhalter binden
+            pstmt.setString(1, recipe.getName());
+            pstmt.setString(2, recipe.getPictureUrl());
+            pstmt.setString(3, recipe.getIngredients());
+            pstmt.setString(4, recipe.getInstructions());
+            pstmt.setString(5, recipe.getDifficultyLevel());
+            pstmt.setString(6, recipe.getCategory());
+
+            pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
-        try {
-            stmt.close();
-            connection.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
         return true;
+
     }
 
     //nochmal anschauen sollte ja nur 1 mal ausgeführt werden oder?
@@ -75,13 +77,13 @@ public class PostgresRecipeManagerImpl implements RecipeManager  {
             stmt.executeUpdate("DROP TABLE IF EXISTS recipes");
             stmt.executeUpdate("DROP TABLE IF EXISTS recipe_ingredients");
 
-        String createRecipeTable ="CREATE TABLE tasks (" +
+        String createRecipeTable ="CREATE TABLE recipes (" +
                                     "id SERIAL PRIMARY KEY, " +
                                     "name varchar(100) NOT NULL, " +
                                     "picture varchar(100) NOT NULL, " +
                                     "ingredients varchar(1000) NOT NULL, " +
                                     "instructions varchar(1000) NOT NULL, " +
-                                    "difficulty int NOT NULL, " +
+                                    "difficulty varchar(20) NOT NULL, " +
                                     "category varchar(100) NOT NULL )"
         
         String createIngredientsTable = "CREATE TABLE recipe_ingredients (" +
