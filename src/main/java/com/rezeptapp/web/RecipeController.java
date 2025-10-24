@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import com.rezeptapp.data.implemented.RecipeImpl;
 import java.util.List;
 
 @RestController
@@ -34,6 +34,20 @@ public class RecipeController {
     public List<Recipe> getAllRecipes() {
         return recipeManager.getAllRecipes();
     }
+
+
+    @PostMapping("/recipes")
+public ResponseEntity<MessageAnswer> createRecipe(@RequestBody RecipeImpl recipe) {
+
+    
+    boolean success = recipeManager.addRecipe(recipe);
+
+    if (success) {
+        return new ResponseEntity<>(new MessageAnswer("Rezept erfolgreich erstellt."), HttpStatus.CREATED);
+    } else {
+        return new ResponseEntity<>(new MessageAnswer("Rezept konnte nicht gespeichert werden."), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+}
 
 
 

@@ -20,7 +20,7 @@ public class PostgresRecipeManagerImpl implements RecipeManager {
 
     @Override
     public boolean addRecipe(Recipe recipe) {
-        String insertSQL = "INSERT INTO recipes (name, picture, ingredients, instructions, difficulty, category) VALUES (?, ?, ?, ?, ?, ?)";
+        String insertSQL = "INSERT INTO recipes (name, pictureUrl, ingredients, instructions, difficultyLevel, category) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement pstmt = connection.prepareStatement(insertSQL)) {
 
