@@ -1,20 +1,20 @@
 plugins {
     id 'java'
-    id 'application'
+    id 'org.springframework.boot' version '2.7.5' 
+    id 'io.spring.dependency-management' version '1.0.15.RELEASE'
 }
 
+group = "com.rezeptapp" 
+version = "1.0.0-SNAPSHOT"
+java.sourceCompatibility = JavaVersion.VERSION_17 
 
 repositories {
     mavenCentral()
 }
 
-// LISTE der Bibliotheken, die das Projekt benötigt
 dependencies {
-    
-    implementation 'com.sun.mail:jakarta.mail:2.0.1'
-
-}
-
-application {
-    mainClass = '' // Passe den Hauptklassenpfad an
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    implementation 'org.postgresql:postgresql'
+    implementation 'org.apache.commons:commons-dbcp2:2.9.0'
 }

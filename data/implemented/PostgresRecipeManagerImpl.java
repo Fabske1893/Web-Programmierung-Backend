@@ -43,7 +43,7 @@ public class PostgresRecipeManagerImpl implements RecipeManager  {
         Connection connection = null;
 
                 // SQL-Befehl mit Platzhaltern (?)
-        String insertSQL = "INSERT INTO recipes (name, picture, ingredients, instructions, difficulty, category) VALUES (?, ?, ?, ?, ?, ?)";
+        String insertSQL = "INSERT INTO rezepte (name, picture, ingredients, instructions, difficulty, category) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection connection = basicDataSource.getConnection();
             PreparedStatement pstmt = connection.prepareStatement(insertSQL)) {
@@ -109,6 +109,32 @@ public class PostgresRecipeManagerImpl implements RecipeManager  {
             e.printStackTrace();
         }
 
+    }
+
+    @Override
+    public List<Recipe> getAllRecipes() {
+        List<Recipe> recipes = new ArrayList<>();
+        String sql = "SELECT * FROM rezepte"; //rezepte is der tabellen name der PostgresDB tabelle
+
+        try (Connection connection = basicDataSource.getConnection();
+             Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                Recipe recipe = new RecipeImpl();
+                recipe.setName(rs.getString("name"));
+                recipe.setPictureUrl(rs.getString("picture"));
+                recipe.setIngredients(rs.getString("ingredients"));
+                recipe.setInstructions(rs.getString("instructions"));
+                recipe.setDifficultyLevel(rs.getString("difficulty"));
+                recipe.setCategory(rs.getString("category"));
+                recipes.add(recipe);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+        return recipes;
     }
 
 
