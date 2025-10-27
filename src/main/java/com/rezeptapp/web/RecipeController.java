@@ -12,7 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-
+import com.rezeptapp.data.implemented.EmailService;
 import com.rezeptapp.data.implemented.RecipeImpl;
 import java.util.List;
 
@@ -46,6 +46,42 @@ public class RecipeController {
          throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Rezept nicht gefunden"); // Gibt einen 404-Fehler zurück
         }
     }
+
+
+
+    @PostMapping("/recipes/{id}/send-email")
+    public ResponseEntity<MessageAnswer> sendRecipeByEmail(
+        @PathVariable int id,
+        @RequestParam String recipientEmail) { 
+
+    Optional<Recipe> recipeOpt = recipeManager.getRecipeById(id);
+
+    if (recipeOpt.isPresent()) {
+        Recipe recipe = recipeOpt.get();
+        try {
+            EmailService emailService = new EmailService(); 
+
+            
+            String emailSubject = "Rezept: " + recipe.getName();
+            String emailText = "Hallo!\n\nHier ist das Rezept für " + recipe.getName() + ":\n\n" +
+                               "Zutaten:\n" + recipe.getIngredients() + "\n\n" +
+                               "Zubereitung:\n" + recipe.getInstructions() + "\n\n" +
+                               "Viel Spaß beim Kochen!";
+
+            
+            emailService.sendRecipeEmail(recipientEmail, emailSubject, emailText); 
+
+            return new ResponseEntity<>(new MessageAnswer("Rezept erfolgreich gesendet."), HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(new MessageAnswer("E-Mail konnte nicht gesendet werden."), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    } else {
+        return new ResponseEntity<>(new MessageAnswer("Rezept nicht gefunden."), HttpStatus.NOT_FOUND);
+    }
+    }
+
+
 
 
 
