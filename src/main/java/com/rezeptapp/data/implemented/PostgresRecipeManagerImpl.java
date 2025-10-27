@@ -82,6 +82,7 @@ public Optional<Recipe> getRecipeById(int id) {
             while (rs.next()) {
                 Recipe recipe = new RecipeImpl();
                 recipe.setName(rs.getString("name"));
+                recipe.setId(rs.getInt("id"));
                 recipe.setPictureUrl(rs.getString("pictureUrl"));
                 recipe.setIngredients(rs.getString("ingredients"));
                 recipe.setInstructions(rs.getString("instructions"));

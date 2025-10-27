@@ -13,4 +13,6 @@ public interface Recipe {
     void setDifficultyLevel(String level);
     String getCategory();
     void setCategory(String category);
+    int getId();
+    void setId(int id);
 }
