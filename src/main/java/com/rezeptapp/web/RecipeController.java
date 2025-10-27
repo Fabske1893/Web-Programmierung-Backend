@@ -52,26 +52,29 @@ public class RecipeController {
     @PostMapping("/recipes/{id}/send-email")
     public ResponseEntity<MessageAnswer> sendRecipeByEmail(
         @PathVariable int id,
-        @RequestParam String recipientEmail) { 
+        @RequestParam String token) { 
 
+ 
+    String recipientEmail = userManager.getEmailFromToken(token);
+
+    if (recipientEmail == null) {
+        return new ResponseEntity<>(new MessageAnswer("Ungültiger Token oder Benutzer nicht eingeloggt."), HttpStatus.UNAUTHORIZED);
+    }
     Optional<Recipe> recipeOpt = recipeManager.getRecipeById(id);
 
     if (recipeOpt.isPresent()) {
         Recipe recipe = recipeOpt.get();
         try {
             EmailService emailService = new EmailService(); 
-
-            
             String emailSubject = "Rezept: " + recipe.getName();
             String emailText = "Hallo!\n\nHier ist das Rezept für " + recipe.getName() + ":\n\n" +
                                "Zutaten:\n" + recipe.getIngredients() + "\n\n" +
                                "Zubereitung:\n" + recipe.getInstructions() + "\n\n" +
                                "Viel Spaß beim Kochen!";
 
-            
-            emailService.sendRecipeEmail(recipientEmail, emailSubject, emailText); 
+            emailService.sendRecipeEmail(recipientEmail, emailSubject, emailText);
 
-            return new ResponseEntity<>(new MessageAnswer("Rezept erfolgreich gesendet."), HttpStatus.OK);
+            return new ResponseEntity<>(new MessageAnswer("Rezept erfolgreich an " + recipientEmail + " gesendet."), HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(new MessageAnswer("E-Mail konnte nicht gesendet werden."), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -80,6 +83,10 @@ public class RecipeController {
         return new ResponseEntity<>(new MessageAnswer("Rezept nicht gefunden."), HttpStatus.NOT_FOUND);
     }
     }
+
+
+
+   
 
 
 
@@ -127,3 +134,7 @@ public ResponseEntity<MessageAnswer> createRecipe(@RequestBody RecipeImpl recipe
         }
     }
 }
+
+
+
+    

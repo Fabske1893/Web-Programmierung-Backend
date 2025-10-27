@@ -7,6 +7,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.ResultSet;
 
 @Component
 public class PostgresUserManagerImpl implements UserManager {
@@ -36,6 +37,33 @@ public class PostgresUserManagerImpl implements UserManager {
             return false;
         }
     }
+
+    @Override
+    public String getEmailFromToken(String token) {
+    String email = null;
+    String sql = "SELECT email FROM users WHERE token = ?";
+
+    if (token == null || token.equals("OFF") || token.isEmpty()) {
+        return null; 
+    }
+
+    try (Connection conn = dataSource.getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+        pstmt.setString(1, token);
+        try (ResultSet rs = pstmt.executeQuery()) {
+            if (rs.next()) {
+                email = rs.getString("email");
+            }
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return email; 
+    }
+
+
+
 
     @Override
     public String loginUser(String email, String password) {
