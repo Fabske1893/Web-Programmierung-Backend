@@ -1,12 +1,17 @@
 package com.rezeptapp.data.implemented;
 
 import com.rezeptapp.data.api.Recipe;
+import com.rezeptapp.data.model.Ingredient;
+import java.util.List;                     
+import java.util.ArrayList;                  
+
+
 
 public class RecipeImpl implements Recipe {
     private int id; 
     private String name;
     private String pictureUrl;
-    private String ingredients;
+    private List<Ingredient> ingredients = new ArrayList<>();
     private String instructions;
     private String difficultyLevel;
     private String category;
@@ -23,9 +28,9 @@ public class RecipeImpl implements Recipe {
     public void setPictureUrl(String url) { this.pictureUrl = url; }
 
     @Override
-    public String getIngredients() { return this.ingredients; }
+    public List<Ingredient> getIngredients() { return this.ingredients; }
     @Override
-    public void setIngredients(String ingredients) { this.ingredients = ingredients; }
+    public void setIngredients(List<Ingredient> ingredients) { this.ingredients = ingredients; }
 
     @Override
     public String getInstructions() { return this.instructions; }

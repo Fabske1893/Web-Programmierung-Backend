@@ -1,12 +1,14 @@
 package com.rezeptapp.data.api;
+import com.rezeptapp.data.model.Ingredient;
+import java.util.List;
 
 public interface Recipe {
     String getName();
     void setName(String name);
     String getPictureUrl();
     void setPictureUrl(String url);
-    String getIngredients();
-    void setIngredients(String ingredients);
+    List<Ingredient> getIngredients();        
+    void setIngredients(List<Ingredient> ingredients);
     String getInstructions();
     void setInstructions(String instructions);
     String getDifficultyLevel();
@@ -15,4 +17,5 @@ public interface Recipe {
     void setCategory(String category);
     int getId();
     void setId(int id);
+    
 }

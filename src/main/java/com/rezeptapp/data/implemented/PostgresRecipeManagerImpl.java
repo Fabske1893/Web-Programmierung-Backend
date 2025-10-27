@@ -8,6 +8,8 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import com.rezeptapp.data.model.Ingredient;
+
 
 
 @Component 
@@ -20,81 +22,171 @@ public class PostgresRecipeManagerImpl implements RecipeManager {
         this.dataSource = dataSource;
     }
 
+    
+    
     @Override
-    public boolean addRecipe(Recipe recipe) {
-        String insertSQL = "INSERT INTO recipes (name, pictureUrl, ingredients, instructions, difficultyLevel, category) VALUES (?, ?, ?, ?, ?, ?)";
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement pstmt = connection.prepareStatement(insertSQL)) {
-
-            pstmt.setString(1, recipe.getName());
-            pstmt.setString(2, recipe.getPictureUrl());
-            pstmt.setString(3, recipe.getIngredients());
-            pstmt.setString(4, recipe.getInstructions());
-            pstmt.setString(5, recipe.getDifficultyLevel());
-            pstmt.setString(6, recipe.getCategory());
-            pstmt.executeUpdate();
-            return true;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    @Override
-public Optional<Recipe> getRecipeById(int id) {
-    String sql = "SELECT * FROM recipes WHERE id = ?"; 
+    public Optional<Recipe> getRecipeById(int id) {
+    String recipeSql = "SELECT * FROM recipes WHERE id = ?";
+    String ingredientsSql = "SELECT amount, unit, ingredient_name FROM recipe_ingredients WHERE recipe_id = ?"; // Neue Abfrage
     Recipe recipe = null;
 
     try (Connection connection = dataSource.getConnection();
-         PreparedStatement pstmt = connection.prepareStatement(sql)) {
+         PreparedStatement recipePstmt = connection.prepareStatement(recipeSql)) {
 
-        pstmt.setInt(1, id); 
-        try (ResultSet rs = pstmt.executeQuery()) {
-            if (rs.next()) { 
+        recipePstmt.setInt(1, id);
+        try (ResultSet rsRecipe = recipePstmt.executeQuery()) {
+            if (rsRecipe.next()) { 
                 recipe = new RecipeImpl();
-                recipe.setName(rs.getString("name"));
-                recipe.setPictureUrl(rs.getString("pictureUrl"));
-                recipe.setIngredients(rs.getString("ingredients"));
-                recipe.setInstructions(rs.getString("instructions"));
-                recipe.setDifficultyLevel(rs.getString("difficultyLevel"));
-                recipe.setCategory(rs.getString("category"));
+                recipe.setId(rsRecipe.getInt("id"));
+                recipe.setName(rsRecipe.getString("name"));
+                recipe.setPictureUrl(rsRecipe.getString("pictureUrl"));
+                recipe.setInstructions(rsRecipe.getString("instructions"));
+                recipe.setDifficultyLevel(rsRecipe.getString("difficultyLevel"));
+                recipe.setCategory(rsRecipe.getString("category"));
+
+              
+                List<Ingredient> ingredientsList = new ArrayList<>();
+                try (PreparedStatement ingredientsPstmt = connection.prepareStatement(ingredientsSql)) {
+                    ingredientsPstmt.setInt(1, id);
+                    try (ResultSet rsIngredients = ingredientsPstmt.executeQuery()) {
+                        while (rsIngredients.next()) {
+                            ingredientsList.add(new Ingredient(
+                                rsIngredients.getDouble("amount"), 
+                                rsIngredients.getString("unit"),
+                                rsIngredients.getString("ingredient_name")
+                            ));
+                        }
+                    }
+                }
+                recipe.setIngredients(ingredientsList); 
                 
             }
         }
     } catch (SQLException e) {
         e.printStackTrace();
     }
-    // Optional.ofNullable gibt Optional zurück das leer ist, wenn recipe null ist
     return Optional.ofNullable(recipe);
 }
+
+@Override
+public boolean addRecipe(Recipe recipe) {
+    String recipeSql = "INSERT INTO recipes (name, pictureUrl, instructions, difficultyLevel, category) VALUES (?, ?, ?, ?, ?) RETURNING id";
+    String ingredientSql = "INSERT INTO recipe_ingredients (recipe_id, amount, unit, ingredient_name) VALUES (?, ?, ?, ?)";
+    Connection connection = null; 
+
+    try {
+        connection = dataSource.getConnection();
+        connection.setAutoCommit(false); 
+
+        int recipeId = -1;
+
+        
+        try (PreparedStatement recipePstmt = connection.prepareStatement(recipeSql, Statement.RETURN_GENERATED_KEYS)) {
+            recipePstmt.setString(1, recipe.getName());
+            recipePstmt.setString(2, recipe.getPictureUrl());
+            recipePstmt.setString(3, recipe.getInstructions());
+            recipePstmt.setString(4, recipe.getDifficultyLevel());
+            recipePstmt.setString(5, recipe.getCategory());
+            recipePstmt.executeUpdate();
+
+            try (ResultSet generatedKeys = recipePstmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    recipeId = generatedKeys.getInt(1);
+                } else {
+                    throw new SQLException("Konnte keine ID für das neue Rezept erhalten.");
+                }
+            }
+        }
+
+      
+        try (PreparedStatement ingredientPstmt = connection.prepareStatement(ingredientSql)) {
+            for (Ingredient ingredient : recipe.getIngredients()) {
+                ingredientPstmt.setInt(1, recipeId);
+                ingredientPstmt.setDouble(2, ingredient.getAmount());
+                ingredientPstmt.setString(3, ingredient.getUnit());
+                ingredientPstmt.setString(4, ingredient.getName());
+                ingredientPstmt.addBatch(); 
+            }
+            ingredientPstmt.executeBatch(); 
+        }
+
+        connection.commit(); 
+        return true;
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+        if (connection != null) {
+            try {
+                connection.rollback(); 
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+        return false;
+    } finally {
+        if (connection != null) {
+            try {
+                connection.setAutoCommit(true); 
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+
+
 
 
 
     @Override
     public List<Recipe> getAllRecipes() {
-        List<Recipe> recipes = new ArrayList<>();
-        String sql = "SELECT * FROM recipes";
+    List<Recipe> recipes = new ArrayList<>();
+    String recipeSql = "SELECT * FROM recipes";
+    String ingredientsSql = "SELECT amount, unit, ingredient_name FROM recipe_ingredients WHERE recipe_id = ?"; 
+    try (Connection connection = dataSource.getConnection();
+         Statement recipeStmt = connection.createStatement();
+         ResultSet rsRecipes = recipeStmt.executeQuery(recipeSql)) {
 
-        try (Connection connection = dataSource.getConnection();
-             Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+        while (rsRecipes.next()) {
+            Recipe recipe = new RecipeImpl();
+            int currentRecipeId = rsRecipes.getInt("id"); 
+            recipe.setId(currentRecipeId);
+            recipe.setName(rsRecipes.getString("name"));
+            recipe.setPictureUrl(rsRecipes.getString("pictureUrl"));
+            recipe.setInstructions(rsRecipes.getString("instructions"));
+            recipe.setDifficultyLevel(rsRecipes.getString("difficultyLevel"));
+            recipe.setCategory(rsRecipes.getString("category"));
 
-            while (rs.next()) {
-                Recipe recipe = new RecipeImpl();
-                recipe.setName(rs.getString("name"));
-                recipe.setId(rs.getInt("id"));
-                recipe.setPictureUrl(rs.getString("pictureUrl"));
-                recipe.setIngredients(rs.getString("ingredients"));
-                recipe.setInstructions(rs.getString("instructions"));
-                recipe.setDifficultyLevel(rs.getString("difficultyLevel"));
-                recipe.setCategory(rs.getString("category"));
-                recipes.add(recipe);
+            List<Ingredient> ingredientsList = new ArrayList<>();
+            try (PreparedStatement ingredientsPstmt = connection.prepareStatement(ingredientsSql)) {
+                ingredientsPstmt.setInt(1, currentRecipeId);
+                try (ResultSet rsIngredients = ingredientsPstmt.executeQuery()) {
+                    while (rsIngredients.next()) {
+                        ingredientsList.add(new Ingredient(
+                            rsIngredients.getDouble("amount"),
+                            rsIngredients.getString("unit"),
+                            rsIngredients.getString("ingredient_name")
+                        ));
+                    }
+                }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
+            recipe.setIngredients(ingredientsList); 
+           
+
+            recipes.add(recipe); 
         }
-        return recipes;
+    } catch (SQLException e) {
+        e.printStackTrace();
+        return new ArrayList<>();
     }
+    return recipes;
+}
+
+
+
+
+   
 
     
 

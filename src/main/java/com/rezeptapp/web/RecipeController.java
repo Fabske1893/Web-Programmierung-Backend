@@ -5,6 +5,7 @@ import com.rezeptapp.data.api.Recipe;
 import com.rezeptapp.data.api.RecipeManager;
 import com.rezeptapp.data.api.UserManager;
 import com.rezeptapp.data.implemented.UserImpl;
+import com.rezeptapp.data.model.Ingredient;
 import com.rezeptapp.web.api.MessageAnswer;
 import com.rezeptapp.web.api.tokenAnswer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,8 @@ import org.springframework.web.server.ResponseStatusException;
 import com.rezeptapp.data.implemented.EmailService;
 import com.rezeptapp.data.implemented.RecipeImpl;
 import java.util.List;
+import com.rezeptapp.web.api.ShoppingListRequest;
+
 
 
 
@@ -43,9 +46,46 @@ public class RecipeController {
     } 
     else 
         {
-         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Rezept nicht gefunden"); // Gibt einen 404-Fehler zurück
+         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Rezept nicht gefunden");
         }
     }
+
+
+    @PostMapping("/shopping-list/send-email")
+public ResponseEntity<MessageAnswer> sendShoppingListByEmail(@RequestBody ShoppingListRequest request) {
+
+
+    String userEmail = userManager.getEmailFromToken(request.getToken());
+
+    if (userEmail == null) {
+        return new ResponseEntity<>(new MessageAnswer("Ungültiger Token oder Benutzer nicht eingeloggt."), HttpStatus.UNAUTHORIZED);
+    }
+
+    if (request.getShoppingListText() == null || request.getShoppingListText().trim().isEmpty()) {
+         return new ResponseEntity<>(new MessageAnswer("Einkaufsliste ist leer oder enthält keinen Text."), HttpStatus.BAD_REQUEST);
+    }
+
+    
+    try {
+        EmailService emailService = new EmailService(); 
+        String subject = "Deine Einkaufsliste";
+
+        emailService.sendRecipeEmail(userEmail, subject, request.getShoppingListText()); 
+
+        return new ResponseEntity<>(new MessageAnswer("Einkaufsliste erfolgreich an " + userEmail + " gesendet."), HttpStatus.OK);
+    } catch (Exception e) {
+        e.printStackTrace();
+        return new ResponseEntity<>(new MessageAnswer("E-Mail mit Einkaufsliste konnte nicht gesendet werden."), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+}
+
+
+
+
+
+
+
+
 
 
 
@@ -67,8 +107,34 @@ public class RecipeController {
         try {
             EmailService emailService = new EmailService(); 
             String emailSubject = "Rezept: " + recipe.getName();
+            
+           StringBuilder ingredientsText = new StringBuilder();
+            if (recipe.getIngredients() != null && !recipe.getIngredients().isEmpty()) { 
+                for (Ingredient ingredient : recipe.getIngredients()) {
+                    String amountStr = ingredient.getAmount() > 0 ? String.valueOf(ingredient.getAmount()) : "";
+                    String unitStr = (ingredient.getUnit() != null && !ingredient.getUnit().isEmpty()) ? ingredient.getUnit() : ""; 
+                    String nameStr = ingredient.getName() != null ? ingredient.getName() : ""; 
+
+                   
+                    String line = "- ";
+                    if (!amountStr.isEmpty()) {
+                        line += amountStr + " ";
+                    }
+                    if (!unitStr.isEmpty()) {
+                        line += unitStr + " ";
+                    }
+                    line += nameStr; 
+                    ingredientsText.append(line.trim()).append("\n"); 
+                }
+                 if (ingredientsText.length() > 0) {
+                    ingredientsText.setLength(ingredientsText.length() - 1);
+                 }
+
+            } else {
+                ingredientsText.append("Keine Zutaten angegeben.");
+            }
             String emailText = "Hallo!\n\nHier ist das Rezept für " + recipe.getName() + ":\n\n" +
-                               "Zutaten:\n" + recipe.getIngredients() + "\n\n" +
+                               "Zutaten:\n" + ingredientsText.toString() + "\n\n" + 
                                "Zubereitung:\n" + recipe.getInstructions() + "\n\n" +
                                "Viel Spaß beim Kochen!";
 
