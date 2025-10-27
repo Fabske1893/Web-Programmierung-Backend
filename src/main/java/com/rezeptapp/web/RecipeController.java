@@ -1,5 +1,6 @@
 package com.rezeptapp.web;
 
+import java.util.Optional;
 import com.rezeptapp.data.api.Recipe;
 import com.rezeptapp.data.api.RecipeManager;
 import com.rezeptapp.data.api.UserManager;
@@ -10,8 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
 import com.rezeptapp.data.implemented.RecipeImpl;
 import java.util.List;
+
+
+
 
 @RestController
 @RequestMapping("/api")
@@ -28,7 +34,21 @@ public class RecipeController {
         this.userManager = userManager;
     }
 
- 
+    @GetMapping("/recipes/{id}") 
+    public Recipe getRecipeDetails(@PathVariable int id) {
+    Optional<Recipe> recipeOpt = recipeManager.getRecipeById(id);
+
+    if (recipeOpt.isPresent()) {
+        return recipeOpt.get(); 
+    } 
+    else 
+        {
+         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Rezept nicht gefunden"); // Gibt einen 404-Fehler zurück
+        }
+    }
+
+
+
 
     @GetMapping("/recipes")
     public List<Recipe> getAllRecipes() {

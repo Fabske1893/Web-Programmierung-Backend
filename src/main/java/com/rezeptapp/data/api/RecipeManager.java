@@ -1,6 +1,7 @@
 package com.rezeptapp.data.api;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface RecipeManager {
     boolean addRecipe(Recipe recipe);
@@ -8,6 +9,7 @@ public interface RecipeManager {
     List<String> getIngredientsPerEmail(); 
     List<Recipe> getAllRecipesOfUser(User user);
     List<Recipe> getAllRecipes();
+    Optional<Recipe> getRecipeById(int id);
 
 
     

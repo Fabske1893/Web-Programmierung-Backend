@@ -7,6 +7,8 @@ import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
 
 @Component 
 public class PostgresRecipeManagerImpl implements RecipeManager {
@@ -37,6 +39,36 @@ public class PostgresRecipeManagerImpl implements RecipeManager {
             return false;
         }
     }
+
+    @Override
+public Optional<Recipe> getRecipeById(int id) {
+    String sql = "SELECT * FROM recipes WHERE id = ?"; 
+    Recipe recipe = null;
+
+    try (Connection connection = dataSource.getConnection();
+         PreparedStatement pstmt = connection.prepareStatement(sql)) {
+
+        pstmt.setInt(1, id); 
+        try (ResultSet rs = pstmt.executeQuery()) {
+            if (rs.next()) { 
+                recipe = new RecipeImpl();
+                recipe.setName(rs.getString("name"));
+                recipe.setPictureUrl(rs.getString("pictureUrl"));
+                recipe.setIngredients(rs.getString("ingredients"));
+                recipe.setInstructions(rs.getString("instructions"));
+                recipe.setDifficultyLevel(rs.getString("difficultyLevel"));
+                recipe.setCategory(rs.getString("category"));
+                
+            }
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    // Optional.ofNullable gibt Optional zurück das leer ist, wenn recipe null ist
+    return Optional.ofNullable(recipe);
+}
+
+
 
     @Override
     public List<Recipe> getAllRecipes() {
