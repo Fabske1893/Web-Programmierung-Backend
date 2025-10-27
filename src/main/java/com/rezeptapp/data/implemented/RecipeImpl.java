@@ -3,6 +3,7 @@ package com.rezeptapp.data.implemented;
 import com.rezeptapp.data.api.Recipe;
 
 public class RecipeImpl implements Recipe {
+    private int id; 
     private String name;
     private String pictureUrl;
     private String ingredients;
@@ -40,4 +41,9 @@ public class RecipeImpl implements Recipe {
     public String getCategory() { return this.category; }
     @Override
     public void setCategory(String category) { this.category = category; }
+    @Override
+    public int getId() { return this.id; }
+    @Override
+    public void setId(int id) { this.id = id; }
+    
 }
