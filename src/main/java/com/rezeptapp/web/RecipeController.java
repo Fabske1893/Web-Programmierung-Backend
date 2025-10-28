@@ -24,7 +24,7 @@ import com.rezeptapp.web.api.ShoppingListRequest;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.OPTIONS})
 public class RecipeController {
 
     private final RecipeManager recipeManager;
