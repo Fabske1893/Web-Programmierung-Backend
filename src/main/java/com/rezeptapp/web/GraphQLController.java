@@ -8,13 +8,14 @@ import org.springframework.stereotype.Controller;
 
 import java.util.List;
 
-@Controller 
-public class RecipeGraphQLController {
+@Controller
+@CrossOrigin(origins = "*")
+public class GraphQLController {
 
     private final RecipeManager recipeManager;
 
     @Autowired
-    public RecipeGraphQLController(RecipeManager recipeManager) {
+    public GraphQLController(RecipeManager recipeManager) {
         this.recipeManager = recipeManager;
     }
 

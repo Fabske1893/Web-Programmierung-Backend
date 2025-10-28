@@ -10,23 +10,23 @@ import java.util.ArrayList;
 public class RecipeImpl implements Recipe {
     private int id; 
     private String name;
-    private String pictureUrl;
+    private String pictureUrl;  
     private List<Ingredient> ingredients = new ArrayList<>();
     private String instructions;
-    private String difficultyLevel;
+    private String difficultyLevel;  
     private String category;
     private int likes;
 
 
     @Override
-    public String getName() { return this.name; }
+    public String getTitle() { return this.name; }
     @Override
-    public void setName(String name) { this.name = name; }
+    public void setTitle(String title) { this.name = title; }
 
     @Override
-    public String getPictureUrl() { return this.pictureUrl; }
+    public String getImageUrl() { return this.pictureUrl; }
     @Override
-    public void setPictureUrl(String url) { this.pictureUrl = url; }
+    public void setImageUrl(String url) { this.pictureUrl = url; }
 
     @Override
     public List<Ingredient> getIngredients() { return this.ingredients; }
@@ -39,9 +39,9 @@ public class RecipeImpl implements Recipe {
     public void setInstructions(String instructions) { this.instructions = instructions; }
 
     @Override
-    public String getDifficultyLevel() { return this.difficultyLevel; }
+    public String getDifficulty() { return this.difficultyLevel; }
     @Override
-    public void setDifficultyLevel(String level) { this.difficultyLevel = level; }
+    public void setDifficulty(String difficulty) { this.difficultyLevel = difficulty; }
 
     @Override
     public String getCategory() { return this.category; }

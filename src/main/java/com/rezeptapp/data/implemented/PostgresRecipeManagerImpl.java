@@ -38,10 +38,10 @@ public class PostgresRecipeManagerImpl implements RecipeManager {
             if (rsRecipe.next()) { 
                 recipe = new RecipeImpl();
                 recipe.setId(rsRecipe.getInt("id"));
-                recipe.setName(rsRecipe.getString("name"));
-                recipe.setPictureUrl(rsRecipe.getString("pictureUrl"));
+                recipe.setTitle(rsRecipe.getString("name"));  // Frontend title <- DB name
+                recipe.setImageUrl(rsRecipe.getString("pictureUrl")); // Frontend imageUrl <- DB pictureUrl
                 recipe.setInstructions(rsRecipe.getString("instructions"));
-                recipe.setDifficultyLevel(rsRecipe.getString("difficultyLevel"));
+                recipe.setDifficulty(rsRecipe.getString("difficultyLevel")); // Frontend difficulty <- DB difficultyLevel
                 recipe.setCategory(rsRecipe.getString("category"));
 
               
@@ -82,10 +82,10 @@ public boolean addRecipe(Recipe recipe) {
 
         
         try (PreparedStatement recipePstmt = connection.prepareStatement(recipeSql, Statement.RETURN_GENERATED_KEYS)) {
-            recipePstmt.setString(1, recipe.getName());
-            recipePstmt.setString(2, recipe.getPictureUrl());
+            recipePstmt.setString(1, recipe.getTitle());  // Frontend title -> DB name
+            recipePstmt.setString(2, recipe.getImageUrl()); // Frontend imageUrl -> DB pictureUrl
             recipePstmt.setString(3, recipe.getInstructions());
-            recipePstmt.setString(4, recipe.getDifficultyLevel());
+            recipePstmt.setString(4, recipe.getDifficulty()); // Frontend difficulty -> DB difficultyLevel
             recipePstmt.setString(5, recipe.getCategory());
             recipePstmt.executeUpdate();
 
@@ -152,10 +152,10 @@ public boolean addRecipe(Recipe recipe) {
             Recipe recipe = new RecipeImpl();
             int currentRecipeId = rsRecipes.getInt("id"); 
             recipe.setId(currentRecipeId);
-            recipe.setName(rsRecipes.getString("name"));
-            recipe.setPictureUrl(rsRecipes.getString("pictureUrl"));
+            recipe.setTitle(rsRecipes.getString("name"));
+            recipe.setImageUrl(rsRecipes.getString("pictureUrl"));
             recipe.setInstructions(rsRecipes.getString("instructions"));
-            recipe.setDifficultyLevel(rsRecipes.getString("difficultyLevel"));
+            recipe.setDifficulty(rsRecipes.getString("difficultyLevel"));
             recipe.setCategory(rsRecipes.getString("category"));
 
             List<Ingredient> ingredientsList = new ArrayList<>();
