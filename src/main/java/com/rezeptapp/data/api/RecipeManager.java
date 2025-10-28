@@ -11,7 +11,5 @@ public interface RecipeManager {
     List<Recipe> getAllRecipes();
     Optional<Recipe> getRecipeById(int id);
     boolean updateRecipe(Recipe recipe);
-
-
-    
+    boolean deleteRecipe(int id);
 }

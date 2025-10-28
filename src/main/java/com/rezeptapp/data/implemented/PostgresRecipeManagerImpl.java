@@ -227,4 +227,49 @@ public boolean addRecipe(Recipe recipe) {
         return false;
     }
 }
+
+    @Override
+    public boolean deleteRecipe(int id) {
+        String deleteIngredientsSql = "DELETE FROM recipe_ingredients WHERE recipe_id = ?";
+        String deleteRecipeSql = "DELETE FROM recipes WHERE id = ?";
+        Connection connection = null;
+
+        try {
+            connection = dataSource.getConnection();
+            connection.setAutoCommit(false);
+
+            // Zuerst die Zutaten löschen
+            try (PreparedStatement ingredientsPstmt = connection.prepareStatement(deleteIngredientsSql)) {
+                ingredientsPstmt.setInt(1, id);
+                ingredientsPstmt.executeUpdate();
+            }
+
+            // Dann das Rezept löschen
+            try (PreparedStatement recipePstmt = connection.prepareStatement(deleteRecipeSql)) {
+                recipePstmt.setInt(1, id);
+                int rowsAffected = recipePstmt.executeUpdate();
+                connection.commit();
+                return rowsAffected > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            if (connection != null) {
+                try {
+                    connection.rollback();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            return false;
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.setAutoCommit(true);
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 }

@@ -210,6 +210,16 @@ public ResponseEntity<MessageAnswer> likeRecipe(@PathVariable int id) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
     }
+
+    @DeleteMapping("/recipes/{id}")
+    public ResponseEntity<MessageAnswer> deleteRecipe(@PathVariable int id) {
+        boolean success = recipeManager.deleteRecipe(id);
+        if (success) {
+            return new ResponseEntity<>(new MessageAnswer("Rezept erfolgreich gelöscht."), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(new MessageAnswer("Rezept konnte nicht gelöscht werden."), HttpStatus.NOT_FOUND);
+        }
+    }
 }
 
 
