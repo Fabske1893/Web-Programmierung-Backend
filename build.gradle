@@ -23,6 +23,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.apache.commons:commons-dbcp2:2.9.0'
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+	implementation 'com.sun.mail:jakarta.mail:2.0.1'
 	runtimeOnly 'org.postgresql:postgresql'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
