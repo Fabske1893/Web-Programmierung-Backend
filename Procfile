@@ -1,1 +1,1 @@
-web: java -Xmx800m -Xss512k -jar build/libs/backend-0.0.1-SNAPSHOT.jar
+web: java -jar build/libs/backend-0.0.1-SNAPSHOT.jar
