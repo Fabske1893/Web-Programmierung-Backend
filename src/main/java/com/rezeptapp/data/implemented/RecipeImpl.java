@@ -15,6 +15,7 @@ public class RecipeImpl implements Recipe {
     private String instructions;
     private String difficultyLevel;
     private String category;
+    private int likes;
 
 
     @Override
@@ -50,5 +51,10 @@ public class RecipeImpl implements Recipe {
     public int getId() { return this.id; }
     @Override
     public void setId(int id) { this.id = id; }
+    @Override
+    public int getLikes() { return this.likes; }
+    @Override
+    public void setLikes(int likes) { this.likes = likes; }
+    
     
 }

@@ -16,6 +16,9 @@ import org.springframework.web.server.ResponseStatusException;
 import com.rezeptapp.data.implemented.EmailService;
 import com.rezeptapp.data.implemented.RecipeImpl;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.ArrayList;
 import com.rezeptapp.web.api.ShoppingListRequest;
 
 
@@ -151,14 +154,6 @@ public ResponseEntity<MessageAnswer> sendShoppingListByEmail(@RequestBody Shoppi
     }
 
 
-
-   
-
-
-
-
-
-
     @GetMapping("/recipes")
     public List<Recipe> getAllRecipes() {
         return recipeManager.getAllRecipes();
@@ -177,6 +172,44 @@ public ResponseEntity<MessageAnswer> createRecipe(@RequestBody RecipeImpl recipe
         return new ResponseEntity<>(new MessageAnswer("Rezept konnte nicht gespeichert werden."), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
+
+
+
+
+
+    @PostMapping(path = "/graphQL", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<Map<String, Object>> handleGraphQL(@RequestBody Map<String, Object> body) {
+    
+        try {
+            List<Recipe> allRecipes = recipeManager.getAllRecipes();
+            List<Map<String, Object>> recipes = new ArrayList<>();
+
+            for (Recipe r : allRecipes) {
+                Map<String, Object> m = new HashMap<>();
+                
+                m.put("id", r.getId());
+                m.put("imageUrl", r.getImageUrl());
+                m.put("title", r.getName());
+                m.put("difficulty", r.getDifficulty());
+                m.put("category", r.getCategory());
+                m.put("likes", r.getLikes());
+                recipes.add(m);
+            }
+
+            Map<String, Object> data = new HashMap<>();
+            data.put("recipes", recipes);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("data", data);
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Map<String, Object> errorResp = new HashMap<>();
+            errorResp.put("errors", new String[]{"Internal server error"});
+            return new ResponseEntity<>(errorResp, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 
 
