@@ -210,13 +210,14 @@ public boolean addRecipe(Recipe recipe) {
     }
     @Override
     public boolean updateRecipe(Recipe recipe) {
-    String sql = "UPDATE recipes SET title = ?, imageUrl = ?, instructions = ?, difficulty = ?, category = ?, likes = ? WHERE id = ?";
+    // Use the actual DB column names (name, pictureUrl, difficultyLevel)
+    String sql = "UPDATE recipes SET name = ?, pictureUrl = ?, instructions = ?, difficultyLevel = ?, category = ?, likes = ? WHERE id = ?";
     try (Connection c = dataSource.getConnection();
          PreparedStatement ps = c.prepareStatement(sql)) {
-        ps.setString(1, recipe.getTitle());
-        ps.setString(2, recipe.getImageUrl());
+        ps.setString(1, recipe.getTitle());    // title maps to DB 'name'
+        ps.setString(2, recipe.getImageUrl());  // imageUrl maps to DB 'pictureUrl'
         ps.setString(3, recipe.getInstructions());
-        ps.setString(4, recipe.getDifficulty());
+        ps.setString(4, recipe.getDifficulty()); // difficulty maps to DB 'difficultyLevel'
         ps.setString(5, recipe.getCategory());
         ps.setInt(6, recipe.getLikes());
         ps.setInt(7, recipe.getId());
