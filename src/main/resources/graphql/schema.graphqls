@@ -1,0 +1,17 @@
+# src/main/resources/graphql/schema.graphqls
+
+
+type Recipe {
+    id: ID!
+    imageUrl: String
+    title: String
+    difficulty: String
+    category: String
+    likes: Int
+}
+
+
+type Query {
+    
+    recipes: [Recipe]
+}
