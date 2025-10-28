@@ -3,19 +3,21 @@ import com.rezeptapp.data.model.Ingredient;
 import java.util.List;
 
 public interface Recipe {
-    String getName();
-    void setName(String name);
-    String getPictureUrl();
-    void setPictureUrl(String url);
+    String getTitle();
+    void setTitle(String title);
+    String getImageUrl();
+    void setImageUrl(String url);
     List<Ingredient> getIngredients();        
     void setIngredients(List<Ingredient> ingredients);
     String getInstructions();
     void setInstructions(String instructions);
-    String getDifficultyLevel();
-    void setDifficultyLevel(String level);
+    String getDifficulty();
+    void setDifficulty(String difficulty);
     String getCategory();
     void setCategory(String category);
     int getId();
     void setId(int id);
+    int getLikes();
+    void setLikes(int likes);
     
 }
