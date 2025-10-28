@@ -70,7 +70,7 @@ public class PostgresRecipeManagerImpl implements RecipeManager {
 
 @Override
 public boolean addRecipe(Recipe recipe) {
-    String recipeSql = "INSERT INTO recipes (name, pictureUrl, instructions, difficultyLevel, category) VALUES (?, ?, ?, ?, ?) RETURNING id";
+    String recipeSql = "INSERT INTO recipes (name, pictureUrl, instructions, difficultyLevel, category, likes) VALUES (?, ?, ?, ?, ?, ?) RETURNING id";
     String ingredientSql = "INSERT INTO recipe_ingredients (recipe_id, amount, unit, ingredient_name) VALUES (?, ?, ?, ?)";
     Connection connection = null; 
 
@@ -87,6 +87,7 @@ public boolean addRecipe(Recipe recipe) {
             recipePstmt.setString(3, recipe.getInstructions());
             recipePstmt.setString(4, recipe.getDifficulty()); // Frontend difficulty -> DB difficultyLevel
             recipePstmt.setString(5, recipe.getCategory());
+            recipePstmt.setInt(6, recipe.getLikes());
             recipePstmt.executeUpdate();
 
             try (ResultSet generatedKeys = recipePstmt.getGeneratedKeys()) {
@@ -157,6 +158,7 @@ public boolean addRecipe(Recipe recipe) {
             recipe.setInstructions(rsRecipes.getString("instructions"));
             recipe.setDifficulty(rsRecipes.getString("difficultyLevel"));
             recipe.setCategory(rsRecipes.getString("category"));
+            recipe.setLikes(rsRecipes.getInt("likes"));
 
             List<Ingredient> ingredientsList = new ArrayList<>();
             try (PreparedStatement ingredientsPstmt = connection.prepareStatement(ingredientsSql)) {
@@ -206,4 +208,22 @@ public boolean addRecipe(Recipe recipe) {
         
         return new ArrayList<>();
     }
+    @Override
+    public boolean updateRecipe(Recipe recipe) {
+    String sql = "UPDATE recipes SET title = ?, imageUrl = ?, instructions = ?, difficulty = ?, category = ?, likes = ? WHERE id = ?";
+    try (Connection c = dataSource.getConnection();
+         PreparedStatement ps = c.prepareStatement(sql)) {
+        ps.setString(1, recipe.getTitle());
+        ps.setString(2, recipe.getImageUrl());
+        ps.setString(3, recipe.getInstructions());
+        ps.setString(4, recipe.getDifficulty());
+        ps.setString(5, recipe.getCategory());
+        ps.setInt(6, recipe.getLikes());
+        ps.setInt(7, recipe.getId());
+        return ps.executeUpdate() > 0;
+    } catch (SQLException e) {
+        e.printStackTrace();
+        return false;
+    }
+}
 }

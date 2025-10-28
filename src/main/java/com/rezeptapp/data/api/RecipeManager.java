@@ -10,6 +10,7 @@ public interface RecipeManager {
     List<Recipe> getAllRecipesOfUser(User user);
     List<Recipe> getAllRecipes();
     Optional<Recipe> getRecipeById(int id);
+    boolean updateRecipe(Recipe recipe);
 
 
     

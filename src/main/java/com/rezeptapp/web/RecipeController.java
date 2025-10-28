@@ -170,9 +170,23 @@ public ResponseEntity<MessageAnswer> createRecipe(@RequestBody RecipeImpl recipe
     }
 }
 
-
-
-
+@PutMapping("/recipes/{id}/like")
+public ResponseEntity<MessageAnswer> likeRecipe(@PathVariable int id) {
+    Optional<Recipe> recipeOpt = recipeManager.getRecipeById(id);
+    if (recipeOpt.isPresent()) {
+        Recipe recipe = recipeOpt.get();
+        int currentLikes = recipe.getLikes();
+        recipe.setLikes(currentLikes + 1);
+        boolean success = recipeManager.updateRecipe(recipe); 
+        if (success) {
+            return new ResponseEntity<>(new MessageAnswer("Rezept erfolgreich geliked."), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(new MessageAnswer("Fehler beim Liken des Rezepts."), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    } else {
+        return new ResponseEntity<>(new MessageAnswer("Rezept nicht gefunden."), HttpStatus.NOT_FOUND);
+    }
+}
 
     
 
