@@ -17,9 +17,7 @@ import com.rezeptapp.data.implemented.EmailService;
 import com.rezeptapp.data.implemented.RecipeImpl;
 import java.util.List;
 import com.rezeptapp.web.api.ShoppingListRequest;
-
-
-
+import java.util.Collections;
 
 
 @RestController
@@ -27,180 +25,65 @@ import com.rezeptapp.web.api.ShoppingListRequest;
 @CrossOrigin(origins = "*")
 public class RecipeController {
 
+    /* // Konstruktor und Manager VORÜBERGEHEND AUSKOMMENTIEREN
     private final RecipeManager recipeManager;
     private final UserManager userManager;
+    private final EmailService emailService;
 
-    
     @Autowired
-    public RecipeController(RecipeManager recipeManager, UserManager userManager) {
+    public RecipeController(RecipeManager recipeManager, UserManager userManager, EmailService emailService) {
         this.recipeManager = recipeManager;
         this.userManager = userManager;
+        this.emailService = emailService;
     }
+    */
 
-    @GetMapping("/recipes/{id}") 
-    public Recipe getRecipeDetails(@PathVariable int id) {
-    Optional<Recipe> recipeOpt = recipeManager.getRecipeById(id);
-
-    if (recipeOpt.isPresent()) {
-        return recipeOpt.get(); 
-    } 
-    else 
-        {
-         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Rezept nicht gefunden");
-        }
+    @GetMapping("/recipes/{id}")
+    public /*Recipe*/ ResponseEntity<?> getRecipeDetails(@PathVariable int id) {
+        // Optional<Recipe> recipeOpt = recipeManager.getRecipeById(id);
+        // ...
+        // return recipeOpt.get();
+         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Temporär deaktiviert"); // Platzhalter
     }
-
 
     @PostMapping("/shopping-list/send-email")
-public ResponseEntity<MessageAnswer> sendShoppingListByEmail(@RequestBody ShoppingListRequest request) {
-
-
-    String userEmail = userManager.getEmailFromToken(request.getToken());
-
-    if (userEmail == null) {
-        return new ResponseEntity<>(new MessageAnswer("Ungültiger Token oder Benutzer nicht eingeloggt."), HttpStatus.UNAUTHORIZED);
+    public ResponseEntity<?> sendShoppingListByEmail(@RequestBody /*ShoppingListRequest*/ Object request) {
+        // String userEmail = userManager.getEmailFromToken(request.getToken());
+        // ...
+        return ResponseEntity.ok(Collections.singletonMap("message", "Temporär deaktiviert")); // Platzhalter
     }
-
-    if (request.getShoppingListText() == null || request.getShoppingListText().trim().isEmpty()) {
-         return new ResponseEntity<>(new MessageAnswer("Einkaufsliste ist leer oder enthält keinen Text."), HttpStatus.BAD_REQUEST);
-    }
-
-    
-    try {
-        EmailService emailService = new EmailService(); 
-        String subject = "Deine Einkaufsliste";
-
-        emailService.sendRecipeEmail(userEmail, subject, request.getShoppingListText()); 
-
-        return new ResponseEntity<>(new MessageAnswer("Einkaufsliste erfolgreich an " + userEmail + " gesendet."), HttpStatus.OK);
-    } catch (Exception e) {
-        e.printStackTrace();
-        return new ResponseEntity<>(new MessageAnswer("E-Mail mit Einkaufsliste konnte nicht gesendet werden."), HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-}
-
-
-
-
-
-
-
-
-
-
 
     @PostMapping("/recipes/{id}/send-email")
-    public ResponseEntity<MessageAnswer> sendRecipeByEmail(
-        @PathVariable int id,
-        @RequestParam String token) { 
-
- 
-    String recipientEmail = userManager.getEmailFromToken(token);
-
-    if (recipientEmail == null) {
-        return new ResponseEntity<>(new MessageAnswer("Ungültiger Token oder Benutzer nicht eingeloggt."), HttpStatus.UNAUTHORIZED);
+    public ResponseEntity<?> sendRecipeByEmail(@PathVariable int id, @RequestParam String token) {
+         // String recipientEmail = userManager.getEmailFromToken(token);
+         // ...
+         return ResponseEntity.ok(Collections.singletonMap("message", "Temporär deaktiviert")); // Platzhalter
     }
-    Optional<Recipe> recipeOpt = recipeManager.getRecipeById(id);
-
-    if (recipeOpt.isPresent()) {
-        Recipe recipe = recipeOpt.get();
-        try {
-            EmailService emailService = new EmailService(); 
-            String emailSubject = "Rezept: " + recipe.getName();
-            
-           StringBuilder ingredientsText = new StringBuilder();
-            if (recipe.getIngredients() != null && !recipe.getIngredients().isEmpty()) { 
-                for (Ingredient ingredient : recipe.getIngredients()) {
-                    String amountStr = ingredient.getAmount() > 0 ? String.valueOf(ingredient.getAmount()) : "";
-                    String unitStr = (ingredient.getUnit() != null && !ingredient.getUnit().isEmpty()) ? ingredient.getUnit() : ""; 
-                    String nameStr = ingredient.getName() != null ? ingredient.getName() : ""; 
-
-                   
-                    String line = "- ";
-                    if (!amountStr.isEmpty()) {
-                        line += amountStr + " ";
-                    }
-                    if (!unitStr.isEmpty()) {
-                        line += unitStr + " ";
-                    }
-                    line += nameStr; 
-                    ingredientsText.append(line.trim()).append("\n"); 
-                }
-                 if (ingredientsText.length() > 0) {
-                    ingredientsText.setLength(ingredientsText.length() - 1);
-                 }
-
-            } else {
-                ingredientsText.append("Keine Zutaten angegeben.");
-            }
-            String emailText = "Hallo!\n\nHier ist das Rezept für " + recipe.getName() + ":\n\n" +
-                               "Zutaten:\n" + ingredientsText.toString() + "\n\n" + 
-                               "Zubereitung:\n" + recipe.getInstructions() + "\n\n" +
-                               "Viel Spaß beim Kochen!";
-
-            emailService.sendRecipeEmail(recipientEmail, emailSubject, emailText);
-
-            return new ResponseEntity<>(new MessageAnswer("Rezept erfolgreich an " + recipientEmail + " gesendet."), HttpStatus.OK);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(new MessageAnswer("E-Mail konnte nicht gesendet werden."), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    } else {
-        return new ResponseEntity<>(new MessageAnswer("Rezept nicht gefunden."), HttpStatus.NOT_FOUND);
-    }
-    }
-
-
-
-   
-
-
-
-
-
 
     @GetMapping("/recipes")
-    public List<Recipe> getAllRecipes() {
-        return recipeManager.getAllRecipes();
+    public List<?> getAllRecipes() {
+        // return recipeManager.getAllRecipes();
+        return Collections.emptyList(); // Leere Liste als Platzhalter
     }
-
 
     @PostMapping("/recipes")
-public ResponseEntity<MessageAnswer> createRecipe(@RequestBody RecipeImpl recipe) {
-
-    
-    boolean success = recipeManager.addRecipe(recipe);
-
-    if (success) {
-        return new ResponseEntity<>(new MessageAnswer("Rezept erfolgreich erstellt."), HttpStatus.CREATED);
-    } else {
-        return new ResponseEntity<>(new MessageAnswer("Rezept konnte nicht gespeichert werden."), HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<?> createRecipe(@RequestBody /*RecipeImpl*/ Object recipe) {
+        // boolean success = recipeManager.addRecipe(recipe);
+        // ...
+        return ResponseEntity.status(HttpStatus.CREATED).body(Collections.singletonMap("message", "Temporär deaktiviert")); // Platzhalter
     }
-}
-
-
 
     @PostMapping("/register")
-    public ResponseEntity<MessageAnswer> registerUser(@RequestBody UserImpl user) {
-        boolean success = userManager.registerUser(user);
-        if (success) {
-            return new ResponseEntity<>(new MessageAnswer("Benutzer erfolgreich registriert."), HttpStatus.CREATED);
-        } else {
-            return new ResponseEntity<>(new MessageAnswer("Benutzer mit dieser E-Mail existiert bereits."), HttpStatus.CONFLICT);
-        }
+    public ResponseEntity<?> registerUser(@RequestBody /*UserImpl*/ Object user) {
+         // boolean success = userManager.registerUser(user);
+         // ...
+         return ResponseEntity.status(HttpStatus.CREATED).body(Collections.singletonMap("message", "Temporär deaktiviert")); // Platzhalter
     }
 
     @PostMapping("/login")
-    public ResponseEntity<tokenAnswer> loginUser(@RequestBody UserImpl user) {
-        String token = userManager.loginUser(user.getEmail(), user.getPassword());
-        if (!token.equals("OFF")) {
-            return new ResponseEntity<>(new tokenAnswer(token), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
+    public ResponseEntity<?> loginUser(@RequestBody /*UserImpl*/ Object user) {
+         // String token = userManager.loginUser(user.getEmail(), user.getPassword());
+         // ...
+         return ResponseEntity.ok(Collections.singletonMap("token", "TEMP_TOKEN")); // Platzhalter
     }
 }
-
-
-
-    
