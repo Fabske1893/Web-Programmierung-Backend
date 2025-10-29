@@ -1,31 +1,37 @@
 package com.rezeptapp.web;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import com.rezeptapp.data.api.Recipe;
-import com.rezeptapp.data.api.RecipeManager;
+
+import graphql.ExecutionResult;
+import graphql.GraphQL;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.graphql.data.method.annotation.QueryMapping;
-import org.springframework.stereotype.Controller; 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
-// DEAKTIVIERT - Wir nutzen stattdessen GraphQLProvider
-/*
-@Controller
-@CrossOrigin(origins = "*")
-public class GraphQLController {
+@RestController
+@RequestMapping("/graphql")
+public class GraphQLEndpoint {
 
-    private final RecipeManager recipeManager;
+    private final GraphQL graphQL;
 
     @Autowired
-    public GraphQLController(RecipeManager recipeManager) {
-        this.recipeManager = recipeManager;
+    public GraphQLEndpoint(GraphQL graphQL) {
+        this.graphQL = graphQL;
     }
 
-    
-    @QueryMapping
-    public List<Recipe> recipes() {
-       
-        return recipeManager.getAllRecipes();
+    @PostMapping
+    public ResponseEntity<Object> graphql(@RequestBody Map<String, Object> request) {
+        String query = (String) request.get("query");
+        ExecutionResult executionResult = graphQL.execute(query);
+
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("data", executionResult.getData());
+        if (!executionResult.getErrors().isEmpty()) {
+            result.put("errors", executionResult.getErrors());
+        }
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }
-*/
