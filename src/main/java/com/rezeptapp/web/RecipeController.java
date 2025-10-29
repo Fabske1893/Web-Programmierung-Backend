@@ -113,7 +113,8 @@ public ResponseEntity<MessageAnswer> sendShoppingListByEmail(@RequestBody Shoppi
                 for (Ingredient ingredient : recipe.getIngredients()) {
                     String amountStr = ingredient.getAmount() > 0 ? String.valueOf(ingredient.getAmount()) : "";
                     String unitStr = (ingredient.getUnit() != null && !ingredient.getUnit().isEmpty()) ? ingredient.getUnit() : ""; 
-                    String nameStr = ingredient.getTitle() != null ? ingredient.getTitle() : ""; 
+                    String nameStr = ingredient.getName() != null ? ingredient.getName() : ""; 
+                    
 
                    
                     String line = "- ";
