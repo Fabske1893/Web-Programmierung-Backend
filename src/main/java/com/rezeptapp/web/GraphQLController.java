@@ -8,6 +8,8 @@ import org.springframework.stereotype.Controller;
 
 import java.util.List;
 
+// DEAKTIVIERT - Wir nutzen stattdessen GraphQLProvider
+/*
 @Controller
 @CrossOrigin(origins = "*")
 public class GraphQLController {
@@ -26,3 +28,4 @@ public class GraphQLController {
         return recipeManager.getAllRecipes();
     }
 }
+*/
