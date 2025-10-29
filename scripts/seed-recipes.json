@@ -1,0 +1,278 @@
+[
+  {
+    "title": "Spaghetti Carbonara",
+    "imageUrl": "https://images.unsplash.com/photo-1521389508051-d7ffb5dc8bbf?w=800",
+    "instructions": "Spaghetti kochen. Speck anbraten. Eier mit Parmesan verquirlen. Spaghetti mit Speck und Eiermischung vermengen. Mit Pfeffer würzen.",
+    "difficulty": "einfach",
+    "category": "withMeat",
+    "likes": 3,
+    "ingredients": [
+      { "amount": 400, "unit": "g", "name": "Spaghetti" },
+      { "amount": 150, "unit": "g", "name": "Speck" },
+      { "amount": 3, "unit": "", "name": "Eier" },
+      { "amount": 60, "unit": "g", "name": "Parmesan" },
+      { "amount": 1, "unit": "Prise", "name": "Pfeffer" }
+    ]
+  },
+  {
+    "title": "Tomatensuppe",
+    "imageUrl": "https://images.unsplash.com/photo-1547592166-23ac45744acd?w=800",
+    "instructions": "Zwiebeln anschwitzen. Tomaten und Brühe zugeben, köcheln. Pürieren, abschmecken.",
+    "difficulty": "leicht",
+    "category": "vegetarian",
+    "likes": 2,
+    "ingredients": [
+      { "amount": 1, "unit": "", "name": "Zwiebel" },
+      { "amount": 800, "unit": "g", "name": "Tomaten" },
+      { "amount": 500, "unit": "ml", "name": "Gemüsebrühe" }
+    ]
+  },
+  {
+    "title": "Hähnchen-Curry",
+    "imageUrl": "https://images.unsplash.com/photo-1543353071-10c8ba85a904?w=800",
+    "instructions": "Hähnchen anbraten, Zwiebeln und Currypaste dazu, Kokosmilch angießen und köcheln.",
+    "difficulty": "mittel",
+    "category": "withMeat",
+    "likes": 5,
+    "ingredients": [
+      { "amount": 400, "unit": "g", "name": "Hähnchenbrust" },
+      { "amount": 1, "unit": "", "name": "Zwiebel" },
+      { "amount": 2, "unit": "EL", "name": "Currypaste" },
+      { "amount": 400, "unit": "ml", "name": "Kokosmilch" }
+    ]
+  },
+  {
+    "title": "Gemüsepfanne",
+    "imageUrl": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800",
+    "instructions": "Gemüse in Stücke schneiden und in der Pfanne mit Öl anbraten. Mit Sojasauce würzen.",
+    "difficulty": "einfach",
+    "category": "vegan",
+    "likes": 1,
+    "ingredients": [
+      { "amount": 1, "unit": "", "name": "Paprika" },
+      { "amount": 1, "unit": "", "name": "Zucchini" },
+      { "amount": 200, "unit": "g", "name": "Brokkoli" },
+      { "amount": 2, "unit": "EL", "name": "Sojasauce" }
+    ]
+  },
+  {
+    "title": "Pancakes",
+    "imageUrl": "https://images.unsplash.com/photo-1587731676685-545f3b14a9f1?w=800",
+    "instructions": "Mehl, Milch und Eier verrühren. In der Pfanne ausbacken.",
+    "difficulty": "leicht",
+    "category": "vegetarian",
+    "likes": 8,
+    "ingredients": [
+      { "amount": 200, "unit": "g", "name": "Mehl" },
+      { "amount": 300, "unit": "ml", "name": "Milch" },
+      { "amount": 2, "unit": "", "name": "Eier" }
+    ]
+  },
+  {
+    "title": "Rindergulasch",
+    "imageUrl": "https://images.unsplash.com/photo-1511974035430-5de47d3b95da?w=800",
+    "instructions": "Fleisch anbraten, Zwiebeln und Paprika dazu, schmoren lassen.",
+    "difficulty": "schwer",
+    "category": "withMeat",
+    "likes": 4,
+    "ingredients": [
+      { "amount": 600, "unit": "g", "name": "Rindfleisch" },
+      { "amount": 2, "unit": "", "name": "Zwiebeln" },
+      { "amount": 1, "unit": "", "name": "Paprika" }
+    ]
+  },
+  {
+    "title": "Caesar Salad",
+    "imageUrl": "https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=800",
+    "instructions": "Salat waschen, Dressing anrühren, Hähnchen braten, alles mischen.",
+    "difficulty": "einfach",
+    "category": "withMeat",
+    "likes": 6,
+    "ingredients": [
+      { "amount": 1, "unit": "Kopf", "name": "Römersalat" },
+      { "amount": 150, "unit": "g", "name": "Hähnchen" },
+      { "amount": 30, "unit": "g", "name": "Parmesan" }
+    ]
+  },
+  {
+    "title": "Margarita Pizza",
+    "imageUrl": "https://images.unsplash.com/photo-1548365328-8b82f02f296a?w=800",
+    "instructions": "Teig ausrollen, Tomatensoße und Käse drauf, backen.",
+    "difficulty": "mittel",
+    "category": "vegetarian",
+    "likes": 10,
+    "ingredients": [
+      { "amount": 300, "unit": "g", "name": "Pizzateig" },
+      { "amount": 150, "unit": "g", "name": "Mozzarella" },
+      { "amount": 200, "unit": "g", "name": "Tomatensoße" }
+    ]
+  },
+  {
+    "title": "Linseneintopf",
+    "imageUrl": "https://images.unsplash.com/photo-1604908176997-4316517be8e1?w=800",
+    "instructions": "Linsen kochen, Suppengrün und Speck anbraten, zusammen garen.",
+    "difficulty": "mittel",
+    "category": "withMeat",
+    "likes": 7,
+    "ingredients": [
+      { "amount": 250, "unit": "g", "name": "Linsen" },
+      { "amount": 100, "unit": "g", "name": "Speck" },
+      { "amount": 1, "unit": "", "name": "Suppengrün" }
+    ]
+  },
+  {
+    "title": "Falafel Bowl",
+    "imageUrl": "https://images.unsplash.com/photo-1569058242564-8135a27b8427?w=800",
+    "instructions": "Falafel formen und frittieren, mit Salat, Hummus und Reis servieren.",
+    "difficulty": "einfach",
+    "category": "vegan",
+    "likes": 9,
+    "ingredients": [
+      { "amount": 300, "unit": "g", "name": "Kichererbsen" },
+      { "amount": 1, "unit": "", "name": "Zwiebel" },
+      { "amount": 2, "unit": "EL", "name": "Mehl" }
+    ]
+  },
+  {
+    "title": "Shakshuka",
+    "imageUrl": "https://images.unsplash.com/photo-1543352634-87391d7b6506?w=800",
+    "instructions": "Tomaten und Paprika schmoren, Mulden machen, Eier stocken lassen.",
+    "difficulty": "mittel",
+    "category": "vegetarian",
+    "likes": 3,
+    "ingredients": [
+      { "amount": 1, "unit": "", "name": "Paprika" },
+      { "amount": 400, "unit": "g", "name": "Tomaten" },
+      { "amount": 3, "unit": "", "name": "Eier" }
+    ]
+  },
+  {
+    "title": "Sushi Bowl",
+    "imageUrl": "https://images.unsplash.com/photo-1562158075-aa3a74cd5f3c?w=800",
+    "instructions": "Reis kochen, mit Gemüse und Lachs in einer Schüssel anrichten.",
+    "difficulty": "leicht",
+    "category": "withMeat",
+    "likes": 2,
+    "ingredients": [
+      { "amount": 200, "unit": "g", "name": "Sushireis" },
+      { "amount": 150, "unit": "g", "name": "Lachs" },
+      { "amount": 1, "unit": "", "name": "Avocado" }
+    ]
+  },
+  {
+    "title": "Ofengemüse",
+    "imageUrl": "https://images.unsplash.com/photo-1543339494-b4cd35315837?w=800",
+    "instructions": "Gemüse würfeln, würzen und im Ofen backen.",
+    "difficulty": "einfach",
+    "category": "vegan",
+    "likes": 1,
+    "ingredients": [
+      { "amount": 1, "unit": "", "name": "Süßkartoffel" },
+      { "amount": 1, "unit": "", "name": "Paprika" },
+      { "amount": 1, "unit": "", "name": "Zucchini" }
+    ]
+  },
+  {
+    "title": "Chili con Carne",
+    "imageUrl": "https://images.unsplash.com/photo-1604908812608-5c3de2a94aec?w=800",
+    "instructions": "Hackfleisch anbraten, Bohnen und Mais dazu, Tomatensoße zugeben.",
+    "difficulty": "mittel",
+    "category": "withMeat",
+    "likes": 11,
+    "ingredients": [
+      { "amount": 400, "unit": "g", "name": "Rinderhack" },
+      { "amount": 400, "unit": "g", "name": "Tomaten" },
+      { "amount": 200, "unit": "g", "name": "Bohnen" }
+    ]
+  },
+  {
+    "title": "Quiche Lorraine",
+    "imageUrl": "https://images.unsplash.com/photo-1523292562811-8fa7962a78c8?w=800",
+    "instructions": "Teig auslegen, Füllung mit Speck und Käse, backen.",
+    "difficulty": "schwer",
+    "category": "withMeat",
+    "likes": 4,
+    "ingredients": [
+      { "amount": 1, "unit": "Rolle", "name": "Blätterteig" },
+      { "amount": 150, "unit": "g", "name": "Speck" },
+      { "amount": 100, "unit": "g", "name": "Käse" }
+    ]
+  },
+  {
+    "title": "Ratatouille",
+    "imageUrl": "https://images.unsplash.com/photo-1546554137-f86b9593a222?w=800",
+    "instructions": "Gemüse in Scheiben, schichten und schmoren.",
+    "difficulty": "mittel",
+    "category": "vegan",
+    "likes": 5,
+    "ingredients": [
+      { "amount": 1, "unit": "", "name": "Aubergine" },
+      { "amount": 1, "unit": "", "name": "Zucchini" },
+      { "amount": 2, "unit": "", "name": "Tomaten" }
+    ]
+  },
+  {
+    "title": "Lachs mit Zitrone",
+    "imageUrl": "https://images.unsplash.com/photo-1604908554015-3cf34a97b6b8?w=800",
+    "instructions": "Lachs würzen, Zitrone drauf, im Ofen garen.",
+    "difficulty": "leicht",
+    "category": "withMeat",
+    "likes": 6,
+    "ingredients": [
+      { "amount": 2, "unit": "Stk", "name": "Lachsfilets" },
+      { "amount": 1, "unit": "", "name": "Zitrone" }
+    ]
+  },
+  {
+    "title": "Veganes Chili",
+    "imageUrl": "https://images.unsplash.com/photo-1604908176997-4316517be8e1?w=800",
+    "instructions": "Gemüse und Bohnen mit Tomatensoße köcheln.",
+    "difficulty": "einfach",
+    "category": "vegan",
+    "likes": 7,
+    "ingredients": [
+      { "amount": 200, "unit": "g", "name": "Bohnen" },
+      { "amount": 1, "unit": "", "name": "Paprika" },
+      { "amount": 1, "unit": "", "name": "Zwiebel" }
+    ]
+  },
+  {
+    "title": "Gnocchi mit Pesto",
+    "imageUrl": "https://images.unsplash.com/photo-1516100882582-96c3a05fe590?w=800",
+    "instructions": "Gnocchi kochen, mit Pesto und Parmesan vermengen.",
+    "difficulty": "leicht",
+    "category": "vegetarian",
+    "likes": 9,
+    "ingredients": [
+      { "amount": 500, "unit": "g", "name": "Gnocchi" },
+      { "amount": 3, "unit": "EL", "name": "Pesto" },
+      { "amount": 30, "unit": "g", "name": "Parmesan" }
+    ]
+  },
+  {
+    "title": "Pad Thai",
+    "imageUrl": "https://images.unsplash.com/photo-1553621042-f6e147245754?w=800",
+    "instructions": "Reisnudeln einweichen, mit Gemüse, Ei und Sauce braten.",
+    "difficulty": "mittel",
+    "category": "withMeat",
+    "likes": 12,
+    "ingredients": [
+      { "amount": 200, "unit": "g", "name": "Reisnudeln" },
+      { "amount": 2, "unit": "", "name": "Eier" },
+      { "amount": 100, "unit": "g", "name": "Garnelen" }
+    ]
+  },
+  {
+    "title": "Bruschetta",
+    "imageUrl": "https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?w=800",
+    "instructions": "Brot rösten, Tomaten und Basilikum darauf geben.",
+    "difficulty": "einfach",
+    "category": "vegetarian",
+    "likes": 4,
+    "ingredients": [
+      { "amount": 4, "unit": "Scheiben", "name": "Baguette" },
+      { "amount": 2, "unit": "", "name": "Tomaten" },
+      { "amount": 1, "unit": "Bund", "name": "Basilikum" }
+    ]
+  }
+]
