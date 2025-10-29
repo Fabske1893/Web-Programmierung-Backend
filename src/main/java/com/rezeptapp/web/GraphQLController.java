@@ -1,5 +1,5 @@
 package com.rezeptapp.web;
-
+import org.springframework.web.bind.annotation.CrossOrigin;
 import com.rezeptapp.data.api.Recipe;
 import com.rezeptapp.data.api.RecipeManager;
 import org.springframework.beans.factory.annotation.Autowired;

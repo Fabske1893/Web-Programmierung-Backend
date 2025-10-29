@@ -17,6 +17,7 @@ import com.rezeptapp.data.implemented.EmailService;
 import com.rezeptapp.data.implemented.RecipeImpl;
 import java.util.List;
 import com.rezeptapp.web.api.ShoppingListRequest;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 
 
@@ -106,7 +107,7 @@ public ResponseEntity<MessageAnswer> sendShoppingListByEmail(@RequestBody Shoppi
         Recipe recipe = recipeOpt.get();
         try {
             EmailService emailService = new EmailService(); 
-            String emailSubject = "Rezept: " + recipe.getName();
+            String emailSubject = "Rezept: " + recipe.getTitle();
             
            StringBuilder ingredientsText = new StringBuilder();
             if (recipe.getIngredients() != null && !recipe.getIngredients().isEmpty()) { 
@@ -114,6 +115,7 @@ public ResponseEntity<MessageAnswer> sendShoppingListByEmail(@RequestBody Shoppi
                     String amountStr = ingredient.getAmount() > 0 ? String.valueOf(ingredient.getAmount()) : "";
                     String unitStr = (ingredient.getUnit() != null && !ingredient.getUnit().isEmpty()) ? ingredient.getUnit() : ""; 
                     String nameStr = ingredient.getName() != null ? ingredient.getName() : ""; 
+                    
 
                    
                     String line = "- ";
@@ -133,7 +135,7 @@ public ResponseEntity<MessageAnswer> sendShoppingListByEmail(@RequestBody Shoppi
             } else {
                 ingredientsText.append("Keine Zutaten angegeben.");
             }
-            String emailText = "Hallo!\n\nHier ist das Rezept für " + recipe.getName() + ":\n\n" +
+            String emailText = "Hallo!\n\nHier ist das Rezept für " + recipe.getTitle() + ":\n\n" +
                                "Zutaten:\n" + ingredientsText.toString() + "\n\n" + 
                                "Zubereitung:\n" + recipe.getInstructions() + "\n\n" +
                                "Viel Spaß beim Kochen!";
