@@ -1,5 +1,6 @@
 package com.rezeptapp.web;
 
+import graphql.ExecutionInput;
 import graphql.ExecutionResult;
 import graphql.GraphQL;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,8 @@ import java.util.Map;
 
 @CrossOrigin(origins = {
     "https://enigmatic-plateau-04468-3ab96016f4f2.herokuapp.com",
-    "http://localhost:8080"
+    "http://localhost:8080",
+    "http://localhost:3000"
 })
 @RestController
 @RequestMapping("/graphql")
@@ -25,10 +27,20 @@ public class GraphQLEndpoint {
         this.graphQL = graphQL;
     }
 
-    @PostMapping
+    @PostMapping(consumes = "application/json", produces = "application/json")
     public ResponseEntity<Object> graphql(@RequestBody Map<String, Object> request) {
         String query = (String) request.get("query");
-        ExecutionResult executionResult = graphQL.execute(query);
+        @SuppressWarnings("unchecked")
+        Map<String, Object> variables = (Map<String, Object>) request.getOrDefault("variables", new LinkedHashMap<>());
+        String operationName = (String) request.get("operationName");
+
+        ExecutionInput executionInput = ExecutionInput.newExecutionInput()
+                .query(query)
+                .operationName(operationName)
+                .variables(variables)
+                .build();
+
+        ExecutionResult executionResult = graphQL.execute(executionInput);
 
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("data", executionResult.getData());

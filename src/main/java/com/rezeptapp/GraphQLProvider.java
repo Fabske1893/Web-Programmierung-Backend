@@ -41,10 +41,15 @@ public class GraphQLProvider {
     }
 
     private RuntimeWiring buildWiring() {
-        return RuntimeWiring.newRuntimeWiring()
-                .type(newTypeWiring("Query")
-                        .dataFetcher("recipes", graphQLDataFetchers.getRecipesDataFetcher()))
-                .build();
+    return RuntimeWiring.newRuntimeWiring()
+        .type(newTypeWiring("Query")
+            .dataFetcher("recipes", graphQLDataFetchers.getRecipesDataFetcher())
+            .dataFetcher("recipe", graphQLDataFetchers.getRecipeByIdDataFetcher()))
+        .type(newTypeWiring("Mutation")
+            .dataFetcher("createRecipe", graphQLDataFetchers.createRecipeDataFetcher())
+            .dataFetcher("likeRecipe", graphQLDataFetchers.likeRecipeDataFetcher())
+            .dataFetcher("deleteRecipe", graphQLDataFetchers.deleteRecipeDataFetcher()))
+        .build();
     }
 
     @Bean
