@@ -17,6 +17,7 @@ import com.rezeptapp.data.implemented.EmailService;
 import com.rezeptapp.data.implemented.RecipeImpl;
 import java.util.List;
 import com.rezeptapp.web.api.ShoppingListRequest;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 
 

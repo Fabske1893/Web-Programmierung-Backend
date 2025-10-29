@@ -39,9 +39,9 @@ public class PostgresRecipeManagerImpl implements RecipeManager {
                 recipe = new RecipeImpl();
                 recipe.setId(rsRecipe.getInt("id"));
                 recipe.setTitle(rsRecipe.getString("name"));  // Frontend title <- DB name
-                recipe.setImageUrl(rsRecipe.getString("pictureUrl")); // Frontend imageUrl <- DB pictureUrl
+                recipe.setImageUrl(rsRecipe.getString("pictureurl")); // Frontend imageUrl <- DB pictureUrl
                 recipe.setInstructions(rsRecipe.getString("instructions"));
-                recipe.setDifficulty(rsRecipe.getString("difficultyLevel")); // Frontend difficulty <- DB difficultyLevel
+                recipe.setDifficulty(rsRecipe.getString("difficultylevel")); // Frontend difficulty <- DB difficultyLevel
                 recipe.setCategory(rsRecipe.getString("category"));
 
               
@@ -70,7 +70,7 @@ public class PostgresRecipeManagerImpl implements RecipeManager {
 
 @Override
 public boolean addRecipe(Recipe recipe) {
-    String recipeSql = "INSERT INTO recipes (name, pictureUrl, instructions, difficultyLevel, category, likes) VALUES (?, ?, ?, ?, ?, ?) RETURNING id";
+    String recipeSql = "INSERT INTO recipes (name, pictureurl, instructions, difficultylevel, category, likes) VALUES (?, ?, ?, ?, ?, ?) RETURNING id";
     String ingredientSql = "INSERT INTO recipe_ingredients (recipe_id, amount, unit, ingredient_name) VALUES (?, ?, ?, ?)";
     Connection connection = null; 
 
@@ -154,9 +154,9 @@ public boolean addRecipe(Recipe recipe) {
             int currentRecipeId = rsRecipes.getInt("id"); 
             recipe.setId(currentRecipeId);
             recipe.setTitle(rsRecipes.getString("name"));
-            recipe.setImageUrl(rsRecipes.getString("pictureUrl"));
+            recipe.setImageUrl(rsRecipes.getString("pictureurl"));
             recipe.setInstructions(rsRecipes.getString("instructions"));
-            recipe.setDifficulty(rsRecipes.getString("difficultyLevel"));
+            recipe.setDifficulty(rsRecipes.getString("difficultylevel"));
             recipe.setCategory(rsRecipes.getString("category"));
             recipe.setLikes(rsRecipes.getInt("likes"));
 
@@ -210,14 +210,13 @@ public boolean addRecipe(Recipe recipe) {
     }
     @Override
     public boolean updateRecipe(Recipe recipe) {
-    // Use the actual DB column names (name, pictureUrl, difficultyLevel)
-    String sql = "UPDATE recipes SET name = ?, pictureUrl = ?, instructions = ?, difficultyLevel = ?, category = ?, likes = ? WHERE id = ?";
+    String sql = "UPDATE recipes SET name = ?, pictureurl = ?, instructions = ?, difficultylevel = ?, category = ?, likes = ? WHERE id = ?";
     try (Connection c = dataSource.getConnection();
          PreparedStatement ps = c.prepareStatement(sql)) {
-        ps.setString(1, recipe.getTitle());    // title maps to DB 'name'
-        ps.setString(2, recipe.getImageUrl());  // imageUrl maps to DB 'pictureUrl'
+        ps.setString(1, recipe.getTitle());    
+        ps.setString(2, recipe.getImageUrl());  
         ps.setString(3, recipe.getInstructions());
-        ps.setString(4, recipe.getDifficulty()); // difficulty maps to DB 'difficultyLevel'
+        ps.setString(4, recipe.getDifficulty()); 
         ps.setString(5, recipe.getCategory());
         ps.setInt(6, recipe.getLikes());
         ps.setInt(7, recipe.getId());
