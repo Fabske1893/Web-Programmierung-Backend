@@ -10,8 +10,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+@CrossOrigin(origins = {
+    "https://enigmatic-plateau-04468-3ab96016f4f2.herokuapp.com",
+    "http://localhost:8080"
+})
 @RestController
-@CrossOrigin(origins = "*")
+@RequestMapping("/graphql")
 public class GraphQLEndpoint {
 
     private final GraphQL graphQL;
@@ -21,21 +25,17 @@ public class GraphQLEndpoint {
         this.graphQL = graphQL;
     }
 
-    @PostMapping("/graphql")
+    @PostMapping
     public ResponseEntity<Object> graphql(@RequestBody Map<String, Object> request) {
         String query = (String) request.get("query");
-        
         ExecutionResult executionResult = graphQL.execute(query);
-        
+
         Map<String, Object> result = new LinkedHashMap<>();
-        
-        if (executionResult.getErrors().isEmpty()) {
-            result.put("data", executionResult.getData());
-        } else {
+        result.put("data", executionResult.getData());
+        if (!executionResult.getErrors().isEmpty()) {
             result.put("errors", executionResult.getErrors());
-            result.put("data", executionResult.getData());
         }
-        
+
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }
