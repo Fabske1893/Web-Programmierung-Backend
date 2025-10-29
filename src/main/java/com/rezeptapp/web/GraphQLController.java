@@ -9,7 +9,7 @@ import org.springframework.stereotype.Controller;
 import java.util.List;
 
 @Controller
-@CrossOrigin
+@CrossOrigin(origins = "*")
 public class GraphQLController {
 
     private final RecipeManager recipeManager;
