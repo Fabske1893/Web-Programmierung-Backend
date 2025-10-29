@@ -16,6 +16,8 @@ public class CorsConfig {
         
         // Erlaubte Origins
         config.addAllowedOrigin("*");
+        config.addAllowedOrigin("http://127.0.0.1:5500");
+
         
         // Erlaubte HTTP-Methoden
         config.addAllowedMethod("GET");
