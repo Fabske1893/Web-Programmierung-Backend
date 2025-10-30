@@ -7,6 +7,8 @@ import com.rezeptapp.data.model.Ingredient;
 import graphql.schema.DataFetcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import graphql.schema.DataFetcher;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
@@ -81,4 +83,13 @@ public class GraphQLDataFetchers {
             return recipeManager.deleteRecipe(id);
         };
     }
+
+public DataFetcher<Map<String, Object>> getMeDataFetcher() {
+    return env -> Map.of(
+        "id", 1,
+        "username", "Luca",
+        "email", "luca@example.com"
+    );
+}
+
 }

@@ -1,4 +1,4 @@
-package com.mosbach.demo.config;
+package com.rezeptapp.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

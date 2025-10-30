@@ -14,6 +14,7 @@ type Recipe {
 
 
 type Query {
+        me: User
         recipes: [Recipe]
         recipe(id: Int!): Recipe
 }
@@ -44,4 +45,9 @@ type Ingredient {
     amount: Float
     unit: String
     name: String
+}
+type User {
+    id: ID!
+    username: String!
+    email: String!
 }
