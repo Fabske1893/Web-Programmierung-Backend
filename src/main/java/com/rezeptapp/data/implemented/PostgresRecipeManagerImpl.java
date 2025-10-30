@@ -70,7 +70,7 @@ public class PostgresRecipeManagerImpl implements RecipeManager {
 
 @Override
 public boolean addRecipe(Recipe recipe) {
-    String recipeSql = "INSERT INTO recipes (name, pictureurl, instructions, difficultylevel, category, likes) VALUES (?, ?, ?, ?, ?, ?) RETURNING id";
+    String recipeSql = "INSERT INTO recipes (name, pictureurl, instructions, difficultylevel, category, likes, created_by) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id";
     String ingredientSql = "INSERT INTO recipe_ingredients (recipe_id, amount, unit, ingredient_name) VALUES (?, ?, ?, ?)";
     Connection connection = null; 
 
@@ -88,6 +88,7 @@ public boolean addRecipe(Recipe recipe) {
             recipePstmt.setString(4, recipe.getDifficulty()); // Frontend difficulty -> DB difficultyLevel
             recipePstmt.setString(5, recipe.getCategory());
             recipePstmt.setInt(6, recipe.getLikes());
+            recipePstmt.setString(7, recipe.getCreatedBy());
             recipePstmt.executeUpdate();
 
             try (ResultSet generatedKeys = recipePstmt.getGeneratedKeys()) {
