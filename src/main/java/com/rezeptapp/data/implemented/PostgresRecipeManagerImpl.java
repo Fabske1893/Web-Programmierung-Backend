@@ -2,7 +2,7 @@ package com.rezeptapp.data.implemented;
 import com.rezeptapp.data.api.Recipe;
 import com.rezeptapp.data.api.RecipeManager;
 import com.rezeptapp.data.api.User;
-//import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Component;
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ import com.rezeptapp.data.model.Ingredient;
 
 
 
-//@Component 
+@Component 
 public class PostgresRecipeManagerImpl implements RecipeManager {
 
     private final DataSource dataSource;

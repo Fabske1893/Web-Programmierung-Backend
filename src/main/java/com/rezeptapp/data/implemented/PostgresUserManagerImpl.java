@@ -2,14 +2,14 @@ package com.rezeptapp.data.implemented;
 
 import com.rezeptapp.data.api.User;
 import com.rezeptapp.data.api.UserManager;
-//import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Component;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.ResultSet;
 
-//@Component
+@Component
 public class PostgresUserManagerImpl implements UserManager {
 
     private final DataSource dataSource;

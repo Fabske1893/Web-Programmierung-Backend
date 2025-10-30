@@ -7,9 +7,6 @@ import com.rezeptapp.data.model.Ingredient;
 import graphql.schema.DataFetcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import graphql.schema.DataFetcher;
-import org.springframework.stereotype.Component;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
