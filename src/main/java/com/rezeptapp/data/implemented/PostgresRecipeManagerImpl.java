@@ -205,8 +205,52 @@ public boolean addRecipe(Recipe recipe) {
 
     @Override
     public List<Recipe> getAllRecipesOfUser(User user) {
+            if (user == null || user.getEmail() == null || user.getEmail().isEmpty()) {
+                return new ArrayList<>();
+            }
         
-        return new ArrayList<>();
+            List<Recipe> recipes = new ArrayList<>();
+            String recipeSql = "SELECT * FROM recipes WHERE created_by = ?";
+            String ingredientsSql = "SELECT amount, unit, ingredient_name FROM recipe_ingredients WHERE recipe_id = ?";
+        
+            try (Connection connection = dataSource.getConnection();
+                 PreparedStatement recipeStmt = connection.prepareStatement(recipeSql)) {
+            
+                recipeStmt.setString(1, user.getEmail());
+                try (ResultSet rsRecipes = recipeStmt.executeQuery()) {
+                    while (rsRecipes.next()) {
+                        Recipe recipe = new RecipeImpl();
+                        int currentRecipeId = rsRecipes.getInt("id");
+                        recipe.setId(currentRecipeId);
+                        recipe.setTitle(rsRecipes.getString("name"));
+                        recipe.setImageUrl(rsRecipes.getString("pictureurl"));
+                        recipe.setInstructions(rsRecipes.getString("instructions"));
+                        recipe.setDifficulty(rsRecipes.getString("difficultylevel"));
+                        recipe.setCategory(rsRecipes.getString("category"));
+                        recipe.setLikes(rsRecipes.getInt("likes"));
+
+                        List<Ingredient> ingredientsList = new ArrayList<>();
+                        try (PreparedStatement ingredientsPstmt = connection.prepareStatement(ingredientsSql)) {
+                            ingredientsPstmt.setInt(1, currentRecipeId);
+                            try (ResultSet rsIngredients = ingredientsPstmt.executeQuery()) {
+                                while (rsIngredients.next()) {
+                                    ingredientsList.add(new Ingredient(
+                                        rsIngredients.getDouble("amount"),
+                                        rsIngredients.getString("unit"),
+                                        rsIngredients.getString("ingredient_name")
+                                    ));
+                                }
+                            }
+                        }
+                        recipe.setIngredients(ingredientsList);
+                        recipes.add(recipe);
+                    }
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                return new ArrayList<>();
+            }
+            return recipes;
     }
     @Override
     public boolean updateRecipe(Recipe recipe) {

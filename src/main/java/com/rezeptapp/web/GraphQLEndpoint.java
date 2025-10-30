@@ -1,5 +1,6 @@
 package com.rezeptapp.web;
 
+import graphql.ExecutionInput;
 import graphql.ExecutionResult;
 import graphql.GraphQL;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.HashMap;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -22,10 +24,27 @@ public class GraphQLEndpoint {
     }
 
     @PostMapping("/graphql")
-    public ResponseEntity<Object> graphql(@RequestBody Map<String, Object> request) {
-        String query = (String) request.get("query");
+    public ResponseEntity<Object> graphql(
+            @RequestBody Map<String, Object> request,
+            @RequestHeader(value = "Authorization", required = false) String authorizationHeader) {
         
-        ExecutionResult executionResult = graphQL.execute(query);
+        String query = (String) request.get("query");
+        Map<String, Object> variables = (Map<String, Object>) request.get("variables");
+        
+        // Context mit Authorization Header erstellen
+        Map<String, Object> context = new HashMap<>();
+        if (authorizationHeader != null && !authorizationHeader.isEmpty()) {
+            context.put("Authorization", authorizationHeader);
+        }
+        
+        // ExecutionInput mit Context erstellen
+        ExecutionInput executionInput = ExecutionInput.newExecutionInput()
+                .query(query)
+                .variables(variables != null ? variables : new HashMap<>())
+                .context(context)
+                .build();
+        
+        ExecutionResult executionResult = graphQL.execute(executionInput);
         
         Map<String, Object> result = new LinkedHashMap<>();
         

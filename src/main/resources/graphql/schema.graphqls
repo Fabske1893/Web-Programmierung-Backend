@@ -14,4 +14,5 @@ type Recipe {
 type Query {
     
     recipes: [Recipe]
+     myRecipes: [Recipe]
 }
