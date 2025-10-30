@@ -11,11 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-@CrossOrigin(origins = {
-    "https://enigmatic-plateau-04468-3ab96016f4f2.herokuapp.com",
-    "http://localhost:8080",
-    "http://localhost:3000"
-})
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/graphql")
 public class GraphQLEndpoint {
