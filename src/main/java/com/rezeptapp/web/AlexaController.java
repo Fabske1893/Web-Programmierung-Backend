@@ -54,11 +54,67 @@ public class AlexaController {
         ));
     }
 
-    // Test-Endpunkt für Browser (GET)
-    @GetMapping("/recipe")
-    public ResponseEntity<String> readRecipe(@RequestParam("id") int id) {
-        String text = "Das Rezept für Spaghetti Bolognese. Du brauchst Hackfleisch, Tomaten und Nudeln. "
-                    + "Die Zubereitung dauert 30 Minuten. Guten Appetit!";
-        return ResponseEntity.ok(text);
+    
+   @GetMapping("/recipe")
+public ResponseEntity<String> readRecipe(@RequestParam("id") int id) {
+    try {
+        
+        String query = String.format("""
+            {
+              recipe(id: %d) {
+                title
+                ingredients {
+                  amount
+                  unit
+                  name
+                }
+                instructions
+              }
+            }
+        """, id);
+
+      
+        var url = new java.net.URL("https://rezeptappbackend-a9a2cded5f95.herokuapp.com/graphql");
+        var conn = (java.net.HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Content-Type", "application/json");
+        conn.setDoOutput(true);
+
+        String jsonBody = String.format("{\"query\": %s}", new com.fasterxml.jackson.databind.ObjectMapper().writeValueAsString(query));
+        try (var os = conn.getOutputStream()) {
+            os.write(jsonBody.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        }
+
+        String response;
+        try (var in = new java.io.BufferedReader(new java.io.InputStreamReader(conn.getInputStream()))) {
+            response = in.lines().reduce("", (a, b) -> a + b);
+        }
+
+        var mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+        var root = mapper.readTree(response);
+        var recipe = root.path("data").path("recipe");
+
+        if (recipe.isMissingNode()) {
+            return ResponseEntity.ok("Ich konnte das Rezept nicht finden.");
+        }
+
+        
+        StringBuilder sb = new StringBuilder();
+        sb.append("Das Rezept für ").append(recipe.path("title").asText()).append(". ");
+        sb.append("Zutaten: ");
+        for (var ing : recipe.path("ingredients")) {
+            sb.append(ing.path("amount").asText()).append(" ")
+              .append(ing.path("unit").asText()).append(" ")
+              .append(ing.path("name").asText()).append(", ");
+        }
+        sb.append("Zubereitung: ").append(recipe.path("instructions").asText());
+
+        return ResponseEntity.ok(sb.toString());
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.ok("Fehler beim Lesen des Rezepts.");
     }
+}
+
 }

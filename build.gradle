@@ -28,6 +28,8 @@ dependencies {
 	implementation 'com.graphql-java:graphql-java:21.0'
 	implementation 'com.graphql-java:java-dataloader:3.3.0'
 	implementation 'com.graphql-java-kickstart:playground-spring-boot-starter:11.1.0'
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
+
 
 
 	runtimeOnly 'org.postgresql:postgresql'
