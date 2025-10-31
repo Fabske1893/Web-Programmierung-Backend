@@ -54,67 +54,79 @@ public class AlexaController {
         ));
     }
 
-    
-   @GetMapping("/recipe")
+    @GetMapping("/recipe")
 public ResponseEntity<String> readRecipe(@RequestParam("id") int id) {
     try {
-        
+        // GraphQL Query bauen
         String query = String.format("""
-            {
-              recipe(id: %d) {
-                title
-                ingredients {
-                  amount
-                  unit
-                  name
-                }
-                instructions
-              }
+        {
+          recipe(id: %d) {
+            title
+            ingredients {
+              amount
+              unit
+              name
             }
+            instructions
+          }
+        }
         """, id);
 
-      
-        var url = new java.net.URL("https://rezeptappbackend-a9a2cded5f95.herokuapp.com/graphql");
-        var conn = (java.net.HttpURLConnection) url.openConnection();
+        // Verbindung aufbauen
+        java.net.URL url = new java.net.URL("https://rezeptappbackend-a9a2cded5f95.herokuapp.com/graphql");
+        java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
         conn.setRequestProperty("Content-Type", "application/json");
         conn.setDoOutput(true);
 
-        String jsonBody = String.format("{\"query\": %s}", new com.fasterxml.jackson.databind.ObjectMapper().writeValueAsString(query));
+        // Richtiger JSON-Body (kein doppeltes Escaping!)
+        String jsonBody = "{\"query\": \"" + query.replace("\n", " ").replace("\"", "\\\"") + "\"}";
         try (var os = conn.getOutputStream()) {
             os.write(jsonBody.getBytes(java.nio.charset.StandardCharsets.UTF_8));
         }
 
-        String response;
-        try (var in = new java.io.BufferedReader(new java.io.InputStreamReader(conn.getInputStream()))) {
-            response = in.lines().reduce("", (a, b) -> a + b);
+        // Antwort lesen
+        StringBuilder response = new StringBuilder();
+        try (var reader = new java.io.BufferedReader(new java.io.InputStreamReader(conn.getInputStream()))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
         }
 
+        // JSON parsen
         var mapper = new com.fasterxml.jackson.databind.ObjectMapper();
-        var root = mapper.readTree(response);
-        var recipe = root.path("data").path("recipe");
+        var root = mapper.readTree(response.toString());
+        var recipeNode = root.path("data").path("recipe");
 
-        if (recipe.isMissingNode()) {
+        // Prüfen, ob Rezept vorhanden ist
+        if (recipeNode.isMissingNode() || recipeNode.isNull()) {
             return ResponseEntity.ok("Ich konnte das Rezept nicht finden.");
         }
 
-        
-        StringBuilder sb = new StringBuilder();
-        sb.append("Das Rezept für ").append(recipe.path("title").asText()).append(". ");
-        sb.append("Zutaten: ");
-        for (var ing : recipe.path("ingredients")) {
-            sb.append(ing.path("amount").asText()).append(" ")
-              .append(ing.path("unit").asText()).append(" ")
-              .append(ing.path("name").asText()).append(", ");
-        }
-        sb.append("Zubereitung: ").append(recipe.path("instructions").asText());
+        String title = recipeNode.path("title").asText();
+        var ingredients = recipeNode.path("ingredients");
+        String instructions = recipeNode.path("instructions").asText();
 
-        return ResponseEntity.ok(sb.toString());
+        // Text zusammenbauen
+        StringBuilder text = new StringBuilder();
+        text.append("Das Rezept für ").append(title).append(". ");
+        text.append("Zutaten: ");
+        for (var ing : ingredients) {
+            text.append(ing.path("amount").asText()).append(" ")
+                .append(ing.path("unit").asText()).append(" ")
+                .append(ing.path("name").asText()).append(", ");
+        }
+        text.append("Zubereitung: ").append(instructions);
+
+        return ResponseEntity.ok(text.toString());
 
     } catch (Exception e) {
         e.printStackTrace();
         return ResponseEntity.ok("Fehler beim Lesen des Rezepts.");
     }
 }
-
 }
+
+   
+
