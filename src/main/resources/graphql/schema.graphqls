@@ -8,11 +8,49 @@ type Recipe {
     difficulty: String
     category: String
     likes: Int
+        instructions: String
+        ingredients: [Ingredient]
 }
 
 
 type Query {
     
-    recipes: [Recipe]
-     myRecipes: [Recipe]
+    
+        myRecipes: [Recipe]
+        me: User
+        recipes: [Recipe]
+        recipe(id: Int!): Recipe
+}
+
+input IngredientInput {
+    amount: Float
+    unit: String
+    name: String
+}
+
+input RecipeInput {
+    title: String
+    imageUrl: String
+    instructions: String
+    difficulty: String
+    category: String
+    likes: Int
+    ingredients: [IngredientInput]
+}
+
+type Mutation {
+    createRecipe(recipe: RecipeInput!): Boolean
+    likeRecipe(id: Int!): Boolean
+    deleteRecipe(id: Int!): Boolean
+}
+
+type Ingredient {
+    amount: Float
+    unit: String
+    name: String
+}
+type User {
+    id: ID!
+    username: String!
+    email: String!
 }

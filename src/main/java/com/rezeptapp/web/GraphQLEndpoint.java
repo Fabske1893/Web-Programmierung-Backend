@@ -12,8 +12,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.HashMap;
 
-@RestController
 @CrossOrigin(origins = "*")
+@RestController
+@RequestMapping("/graphql")
 public class GraphQLEndpoint {
 
     private final GraphQL graphQL;
@@ -46,15 +47,27 @@ public class GraphQLEndpoint {
         
         ExecutionResult executionResult = graphQL.execute(executionInput);
         
+    @PostMapping(consumes = "application/json", produces = "application/json")
+    public ResponseEntity<Object> graphql(@RequestBody Map<String, Object> request) {
+        String query = (String) request.get("query");
+        @SuppressWarnings("unchecked")
+        Map<String, Object> variables = (Map<String, Object>) request.getOrDefault("variables", new LinkedHashMap<>());
+        String operationName = (String) request.get("operationName");
+
+        ExecutionInput executionInput = ExecutionInput.newExecutionInput()
+                .query(query)
+                .operationName(operationName)
+                .variables(variables)
+                .build();
+
+        ExecutionResult executionResult = graphQL.execute(executionInput);
+
         Map<String, Object> result = new LinkedHashMap<>();
-        
-        if (executionResult.getErrors().isEmpty()) {
-            result.put("data", executionResult.getData());
-        } else {
+        result.put("data", executionResult.getData());
+        if (!executionResult.getErrors().isEmpty()) {
             result.put("errors", executionResult.getErrors());
-            result.put("data", executionResult.getData());
         }
-        
+
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

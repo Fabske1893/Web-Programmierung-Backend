@@ -23,11 +23,15 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.apache.commons:commons-dbcp2:2.9.0'
-	implementation 'org.springframework.boot:spring-boot-starter-graphql'
 	implementation 'com.sun.mail:jakarta.mail:2.0.1'
 	implementation 'com.google.guava:guava:31.1-jre'
 	implementation 'com.graphql-java:graphql-java:21.0'
-	implementation 'com.graphql-java:graphql-java-spring-boot-starter-webmvc:2.0'
+	implementation 'com.graphql-java:java-dataloader:3.3.0'
+	implementation 'com.graphql-java-kickstart:playground-spring-boot-starter:11.1.0'
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
+
+
+
 	runtimeOnly 'org.postgresql:postgresql'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
