@@ -187,7 +187,8 @@ public ResponseEntity<MessageAnswer> createRecipe(
             String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
             java.nio.file.Path filePath = uploadPath.resolve(fileName);
             java.nio.file.Files.copy(image.getInputStream(), filePath);
-            imageUrl = "/uploads/" + fileName;
+            imageUrl = "https://rezeptappbackend-a9a2cded5f95.herokuapp.com/uploads/" + fileName;
+
         }
 
         // Zutaten parsen
