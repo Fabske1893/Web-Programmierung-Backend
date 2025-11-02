@@ -162,6 +162,7 @@ public ResponseEntity<MessageAnswer> sendShoppingListByEmail(@RequestBody Shoppi
  @PostMapping(value = "/recipes", consumes = {"multipart/form-data", "application/x-www-form-urlencoded"})
 @CrossOrigin(origins = "*")
 public ResponseEntity<MessageAnswer> createRecipe(
+    
         @RequestPart(value = "titel", required = false) String title,
         @RequestPart(value = "zutaten", required = false) String zutatenJson,
         @RequestPart(value = "zubereitung", required = false) String instructions,
@@ -171,6 +172,11 @@ public ResponseEntity<MessageAnswer> createRecipe(
         @RequestPart(value = "created_by", required = false) String createdBy,
         @RequestPart(value = "image", required = false) MultipartFile image
 ) {
+    System.out.println("Titel: " + title);
+    System.out.println("Zutaten JSON: " + zutatenJson);
+    System.out.println("Kategorie: " + category);
+    System.out.println("Bild erhalten: " + (image != null ? image.getOriginalFilename() : "kein Bild"));
+
 
     try {
         String imageUrl = null;
