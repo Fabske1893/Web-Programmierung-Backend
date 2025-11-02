@@ -161,14 +161,15 @@ public ResponseEntity<MessageAnswer> sendShoppingListByEmail(@RequestBody Shoppi
 
     @PostMapping(value = "/recipes", consumes = {"multipart/form-data"})
 public ResponseEntity<MessageAnswer> createRecipe(
+
         @RequestPart("titel") String title,
         @RequestPart("zutaten") String zutatenJson,
         @RequestPart("zubereitung") String instructions,
         @RequestPart("difficulty") String difficulty,
         @RequestPart("category") String category,
+        @RequestPart(value = "image", required = false) MultipartFile image,
         @RequestPart("likes") int likes,
-        @RequestPart("created_by") String createdBy,
-        @RequestPart(value = "image", required = false) MultipartFile image) {
+        @RequestPart("created_by") String createdBy) {
 
     try {
         //wen bild da speichern
