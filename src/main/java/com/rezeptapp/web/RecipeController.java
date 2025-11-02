@@ -159,25 +159,18 @@ public ResponseEntity<MessageAnswer> sendShoppingListByEmail(@RequestBody Shoppi
     }
 
 
-   @PostMapping(value = "/recipes", consumes = {"multipart/form-data"})
-    public ResponseEntity<MessageAnswer> createRecipe(
-        @RequestPart(value = "titel", required = false) String title,
-        @RequestPart(value = "zutaten", required = false) String zutatenJson,
-        @RequestPart(value = "zubereitung", required = false) String instructions,
-        @RequestPart(value = "difficulty", required = false) String difficulty,
-        @RequestPart(value = "category", required = false) String category,
-        @RequestPart(value = "likes", required = false) Integer likes,
-        @RequestPart(value = "created_by", required = false) String createdBy,
-        @RequestPart(value = "image", required = false) MultipartFile image) {
+  @PostMapping(value = "/recipes", consumes = {"multipart/form-data"})
+public ResponseEntity<MessageAnswer> createRecipe(
+        @RequestPart("titel") String title,
+        @RequestPart("zutaten") String zutatenJson,
+        @RequestPart("zubereitung") String instructions,
+        @RequestPart("difficulty") String difficulty,
+        @RequestPart("category") String category,
+        @RequestPart(value = "image", required = false) MultipartFile image,
+        @RequestPart("likes") int likes,
+        @RequestPart("created_by") String createdBy) {
 
     try {
-        System.out.println("📥 Multipart Request empfangen:");
-        System.out.println("Titel: " + title);
-        System.out.println("Zutaten: " + zutatenJson);
-        System.out.println("Zubereitung: " + instructions);
-        System.out.println("Datei: " + (image != null ? image.getOriginalFilename() : "keine Datei"));
-
-        
         String imageUrl = null;
         if (image != null && !image.isEmpty()) {
             String uploadDir = "uploads/";
@@ -191,35 +184,69 @@ public ResponseEntity<MessageAnswer> sendShoppingListByEmail(@RequestBody Shoppi
             imageUrl = "/uploads/" + fileName;
         }
 
-        
+        // Zutaten umwandeln
         com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
-        List<com.rezeptapp.data.model.Ingredient> ingredients = null;
-        if (zutatenJson != null && !zutatenJson.isEmpty()) {
-            ingredients = mapper.readValue(
-                zutatenJson,
-                mapper.getTypeFactory().constructCollectionType(List.class, com.rezeptapp.data.model.Ingredient.class)
-            );
-        }
+        List<com.rezeptapp.data.model.Ingredient> ingredients =
+            mapper.readValue(zutatenJson,
+                mapper.getTypeFactory().constructCollectionType(List.class, com.rezeptapp.data.model.Ingredient.class));
 
-        
+        // Rezept speichern
         com.rezeptapp.data.implemented.RecipeImpl recipe = new com.rezeptapp.data.implemented.RecipeImpl();
         recipe.setTitle(title);
         recipe.setIngredients(ingredients);
         recipe.setInstructions(instructions);
         recipe.setDifficulty(difficulty);
         recipe.setCategory(category);
-        recipe.setLikes(likes != null ? likes : 0);
+        recipe.setLikes(likes);
         recipe.setImageUrl(imageUrl);
 
         boolean success = recipeManager.addRecipe(recipe);
+
         if (success) {
-            return new ResponseEntity<>(new MessageAnswer("Rezept erfolgreich erstellt."), HttpStatus.CREATED);
+            
+            try {
+                String userEmail = userManager.getEmailFromToken(createdBy);
+                if (userEmail != null) {
+                    EmailService emailService = new EmailService();
+
+                    StringBuilder ingredientsText = new StringBuilder();
+                    for (var ing : ingredients) {
+                        String amountStr = ing.getAmount() > 0 ? ing.getAmount() + " " : "";
+                        String unitStr = (ing.getUnit() != null ? ing.getUnit() + " " : "");
+                        ingredientsText.append("- ").append(amountStr).append(unitStr).append(ing.getName()).append("\n");
+                    }
+
+                    String subject = "Bestätigung: Dein Rezept \"" + title + "\" wurde erfolgreich erstellt!";
+                    String message = "Hallo!\n\n" +
+                            "vielen Dank, dass du dein Rezept mit der Community geteilt hast.\n\n" +
+                            "Hier eine kurze Zusammenfassung:\n\n" +
+                            "Titel: " + title + "\n" +
+                            "Kategorie: " + category + "\n" +
+                            "Schwierigkeit: " + difficulty + "\n\n" +
+                            "Zutaten:\n" + ingredientsText.toString() + "\n" +
+                            "Zubereitung:\n" + instructions + "\n\n" +
+                            "Viel Spaß beim Kochen!\n\n" +
+                            "Dein RezeptApp-Team";
+
+                    emailService.sendRecipeEmail(userEmail, subject, message);
+                    System.out.println("Bestätigungsmail an " + userEmail + " gesendet.");
+                } else {
+                    System.out.println("Keine E-Mail gefunden für Token: " + createdBy);
+                }
+            } catch (Exception mailEx) {
+                mailEx.printStackTrace();
+                System.err.println("Fehler beim Senden der Bestätigungsmail: " + mailEx.getMessage());
+            }
+
+            return new ResponseEntity<>(new MessageAnswer("Rezept erfolgreich erstellt und Bestätigung gesendet."), HttpStatus.CREATED);
         } else {
             return new ResponseEntity<>(new MessageAnswer("Rezept konnte nicht gespeichert werden."), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+
     } catch (Exception e) {
         e.printStackTrace();
-        return new ResponseEntity<>(new MessageAnswer("Fehler beim Erstellen des Rezepts: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(new MessageAnswer("Fehler beim Erstellen des Rezepts: " + e.getMessage()),
+                HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
 
