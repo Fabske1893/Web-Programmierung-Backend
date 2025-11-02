@@ -244,7 +244,7 @@ public boolean addRecipe(Recipe recipe) {
     }
     @Override
     public boolean updateRecipe(Recipe recipe) {
-    String sql = "UPDATE recipes SET name = ?, pictureurl = ?, instructions = ?, difficultylevel = ?, category = ?, likes = ? WHERE id = ?";
+    String sql = "UPDATE recipes SET name = ?, pictureurl = ?, instructions = ?, difficultylevel = ?, category = ? WHERE id = ?";
     try (Connection c = dataSource.getConnection();
          PreparedStatement ps = c.prepareStatement(sql)) {
         ps.setString(1, recipe.getTitle());    
@@ -252,8 +252,7 @@ public boolean addRecipe(Recipe recipe) {
         ps.setString(3, recipe.getInstructions());
         ps.setString(4, recipe.getDifficulty()); 
         ps.setString(5, recipe.getCategory());
-        ps.setInt(6, recipe.getLikes());
-        ps.setInt(7, recipe.getId());
+        ps.setInt(6, recipe.getId());
         return ps.executeUpdate() > 0;
     } catch (SQLException e) {
         e.printStackTrace();
