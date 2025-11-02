@@ -1,13 +1,15 @@
 package com.rezeptapp.data.implemented;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.rezeptapp.data.api.Recipe;
 import com.rezeptapp.data.model.Ingredient;
 import java.util.List;                     
-import java.util.ArrayList;                  
+import java.util.ArrayList;                
 
 
 
 public class RecipeImpl implements Recipe {
+    @JsonProperty("imageUrl")
     private int id; 
     private String name;
     private String pictureUrl;  
