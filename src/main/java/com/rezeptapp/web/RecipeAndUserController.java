@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 @RestController
 @RequestMapping("/api")
 @CrossOrigin(origins = "*")
-public class RecipeController {
+public class RecipeAndUserController {
 
     private final RecipeManager recipeManager;
     private final UserManager userManager;
@@ -79,15 +79,6 @@ public ResponseEntity<MessageAnswer> sendShoppingListByEmail(@RequestBody Shoppi
         return new ResponseEntity<>(new MessageAnswer("E-Mail mit Einkaufsliste konnte nicht gesendet werden."), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
-
-
-
-
-
-
-
-
-
 
 
     @PostMapping("/recipes/{id}/send-email")
@@ -202,7 +193,7 @@ public ResponseEntity<MessageAnswer> createRecipe(@RequestBody RecipeImpl recipe
         }
     }
 }
-}
+
 
 
     
