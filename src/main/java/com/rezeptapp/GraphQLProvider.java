@@ -11,7 +11,8 @@ import graphql.schema.idl.TypeDefinitionRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
-import jakarta.annotation.PostConstruct;
+
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.net.URL;
 
@@ -41,17 +42,11 @@ public class GraphQLProvider {
     }
 
     private RuntimeWiring buildWiring() {
-    return RuntimeWiring.newRuntimeWiring()
-       .type(newTypeWiring("Query")
-            .dataFetcher("recipes", graphQLDataFetchers.getRecipesDataFetcher())
-            .dataFetcher("recipe", graphQLDataFetchers.getRecipeByIdDataFetcher())
-            .dataFetcher("me", graphQLDataFetchers.getMeDataFetcher()) 
-        )
-        .type(newTypeWiring("Mutation")
-            .dataFetcher("createRecipe", graphQLDataFetchers.createRecipeDataFetcher())
-            .dataFetcher("likeRecipe", graphQLDataFetchers.likeRecipeDataFetcher())
-            .dataFetcher("deleteRecipe", graphQLDataFetchers.deleteRecipeDataFetcher()))
-        .build();
+        return RuntimeWiring.newRuntimeWiring()
+                .type(newTypeWiring("Query")
+                            .dataFetcher("recipes", graphQLDataFetchers.getRecipesDataFetcher())
+                           )
+                .build();
     }
 
     @Bean
