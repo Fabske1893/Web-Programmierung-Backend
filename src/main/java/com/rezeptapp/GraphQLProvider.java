@@ -49,7 +49,6 @@ public class GraphQLProvider {
         )
         .type(newTypeWiring("Mutation")
             .dataFetcher("createRecipe", graphQLDataFetchers.createRecipeDataFetcher())
-            .dataFetcher("likeRecipe", graphQLDataFetchers.likeRecipeDataFetcher())
             .dataFetcher("deleteRecipe", graphQLDataFetchers.deleteRecipeDataFetcher()))
         .build();
     }
