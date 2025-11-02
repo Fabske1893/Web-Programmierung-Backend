@@ -91,4 +91,26 @@ public class PostgresUserManagerImpl implements UserManager {
        
         return true;
     }
+
+    @Override
+    public java.util.Map<String, Object> getUserByToken(String token) {
+        String sql = "SELECT username, email FROM users WHERE token = ?";
+        
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, token);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    java.util.Map<String, Object> user = new java.util.HashMap<>();
+                    user.put("username", rs.getString("username"));
+                    user.put("email", rs.getString("email"));
+                    return user;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

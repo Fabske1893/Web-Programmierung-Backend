@@ -33,7 +33,7 @@ public class RecipeAndUserController {
 
     
     @Autowired
-    public RecipeController(RecipeManager recipeManager, UserManager userManager) {
+    public RecipeAndUserController(RecipeManager recipeManager, UserManager userManager) {
         this.recipeManager = recipeManager;
         this.userManager = userManager;
     }
@@ -190,6 +190,25 @@ public ResponseEntity<MessageAnswer> createRecipe(@RequestBody RecipeImpl recipe
             return new ResponseEntity<>(new MessageAnswer("Rezept erfolgreich gelöscht."), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(new MessageAnswer("Rezept konnte nicht gelöscht werden."), HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/account")
+    public ResponseEntity<java.util.Map<String, Object>> getAccount(@RequestParam String token) {
+        java.util.Map<String, Object> result = new java.util.HashMap<>();
+        try {
+            java.util.Map<String, Object> user = userManager.getUserByToken(token);
+            if (user != null) {
+                result.put("username", user.get("username"));
+                result.put("email", user.get("email"));
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            } else {
+                result.put("error", "User not found");
+                return new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            result.put("error", "User not found");
+            return new ResponseEntity<>(result, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
