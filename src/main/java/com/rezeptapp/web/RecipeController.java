@@ -159,26 +159,24 @@ public ResponseEntity<MessageAnswer> sendShoppingListByEmail(@RequestBody Shoppi
     }
 
 
- @PostMapping(value = "/recipes", consumes = {"multipart/form-data", "application/x-www-form-urlencoded"})
+ @PostMapping(value = "/recipes", consumes = {"multipart/form-data"})
 @CrossOrigin(origins = "*")
 public ResponseEntity<MessageAnswer> createRecipe(
-    
-        @RequestPart(value = "titel", required = false) String title,
-        @RequestPart(value = "zutaten", required = false) String zutatenJson,
-        @RequestPart(value = "zubereitung", required = false) String instructions,
-        @RequestPart(value = "difficulty", required = false) String difficulty,
-        @RequestPart(value = "category", required = false) String category,
-        @RequestPart(value = "likes", required = false) Integer likes,
-        @RequestPart(value = "created_by", required = false) String createdBy,
+        @RequestParam(value = "titel", required = false) String title,
+        @RequestParam(value = "zutaten", required = false) String zutatenJson,
+        @RequestParam(value = "zubereitung", required = false) String instructions,
+        @RequestParam(value = "difficulty", required = false) String difficulty,
+        @RequestParam(value = "category", required = false) String category,
+        @RequestParam(value = "likes", required = false) Integer likes,
+        @RequestParam(value = "created_by", required = false) String createdBy,
         @RequestPart(value = "image", required = false) MultipartFile image
 ) {
-    System.out.println("Titel: " + title);
-    System.out.println("Zutaten JSON: " + zutatenJson);
-    System.out.println("Kategorie: " + category);
-    System.out.println("Bild erhalten: " + (image != null ? image.getOriginalFilename() : "kein Bild"));
-
-
     try {
+        System.out.println("Titel: " + title);
+        System.out.println("Kategorie: " + category);
+        System.out.println("Zutaten JSON: " + zutatenJson);
+        System.out.println("Bild erhalten: " + (image != null ? image.getOriginalFilename() : "kein Bild"));
+
         String imageUrl = null;
         if (image != null && !image.isEmpty()) {
             String uploadDir = "uploads/";
@@ -192,11 +190,12 @@ public ResponseEntity<MessageAnswer> createRecipe(
             imageUrl = "/uploads/" + fileName;
         }
 
-        // Zutaten umwandeln
+        // Zutaten parsen
         com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
-        List<com.rezeptapp.data.model.Ingredient> ingredients =
-            mapper.readValue(zutatenJson,
-                mapper.getTypeFactory().constructCollectionType(List.class, com.rezeptapp.data.model.Ingredient.class));
+        List<com.rezeptapp.data.model.Ingredient> ingredients = mapper.readValue(
+                zutatenJson,
+                mapper.getTypeFactory().constructCollectionType(List.class, com.rezeptapp.data.model.Ingredient.class)
+        );
 
         // Rezept speichern
         com.rezeptapp.data.implemented.RecipeImpl recipe = new com.rezeptapp.data.implemented.RecipeImpl();
@@ -205,13 +204,13 @@ public ResponseEntity<MessageAnswer> createRecipe(
         recipe.setInstructions(instructions);
         recipe.setDifficulty(difficulty);
         recipe.setCategory(category);
-        recipe.setLikes(likes);
+        recipe.setLikes(likes != null ? likes : 0);
         recipe.setImageUrl(imageUrl);
 
         boolean success = recipeManager.addRecipe(recipe);
 
         if (success) {
-            
+            // Bestätigungsmail
             try {
                 String userEmail = userManager.getEmailFromToken(createdBy);
                 if (userEmail != null) {
@@ -237,13 +236,11 @@ public ResponseEntity<MessageAnswer> createRecipe(
                             "Dein RezeptApp-Team";
 
                     emailService.sendRecipeEmail(userEmail, subject, message);
-                    System.out.println("Bestätigungsmail an " + userEmail + " gesendet.");
-                } else {
-                    System.out.println("Keine E-Mail gefunden für Token: " + createdBy);
+                    System.out.println("✅ Bestätigungsmail an " + userEmail + " gesendet.");
                 }
             } catch (Exception mailEx) {
                 mailEx.printStackTrace();
-                System.err.println("Fehler beim Senden der Bestätigungsmail: " + mailEx.getMessage());
+                System.err.println("⚠️ Fehler beim Senden der Bestätigungsmail: " + mailEx.getMessage());
             }
 
             return new ResponseEntity<>(new MessageAnswer("Rezept erfolgreich erstellt und Bestätigung gesendet."), HttpStatus.CREATED);
@@ -257,6 +254,7 @@ public ResponseEntity<MessageAnswer> createRecipe(
                 HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
+
 
 
 
