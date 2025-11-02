@@ -53,10 +53,6 @@ public class RecipeImpl implements Recipe {
     @Override
     public void setId(int id) { this.id = id; }
     @Override
-    public int getLikes() { return this.likes; }
-    @Override
-    public void setLikes(int likes) { this.likes = likes; }
-    @Override
     public String getCreatedBy() { return this.createdBy; }
     @Override
     public void setCreatedBy(String createdBy) { this.createdBy = createdBy; }

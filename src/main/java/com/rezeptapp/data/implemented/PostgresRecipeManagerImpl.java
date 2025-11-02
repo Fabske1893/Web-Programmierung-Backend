@@ -158,7 +158,7 @@ public boolean addRecipe(Recipe recipe) {
             recipe.setInstructions(rsRecipes.getString("instructions"));
             recipe.setDifficulty(rsRecipes.getString("difficultylevel"));
             recipe.setCategory(rsRecipes.getString("category"));
-            recipe.setLikes(rsRecipes.getInt("likes"));
+            
 
             List<Ingredient> ingredientsList = new ArrayList<>();
             try (PreparedStatement ingredientsPstmt = connection.prepareStatement(ingredientsSql)) {
@@ -217,7 +217,7 @@ public boolean addRecipe(Recipe recipe) {
                         recipe.setInstructions(rsRecipes.getString("instructions"));
                         recipe.setDifficulty(rsRecipes.getString("difficultylevel"));
                         recipe.setCategory(rsRecipes.getString("category"));
-                        recipe.setLikes(rsRecipes.getInt("likes"));
+                        
 
                         List<Ingredient> ingredientsList = new ArrayList<>();
                         try (PreparedStatement ingredientsPstmt = connection.prepareStatement(ingredientsSql)) {

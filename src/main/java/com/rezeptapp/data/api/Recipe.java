@@ -17,8 +17,6 @@ public interface Recipe {
     void setCategory(String category);
     int getId();
     void setId(int id);
-    int getLikes();
-    void setLikes(int likes);
     String getCreatedBy();
     void setCreatedBy(String createdBy);
 
