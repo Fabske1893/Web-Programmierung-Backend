@@ -71,3 +71,4 @@ public class GraphQLEndpoint {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }
+}

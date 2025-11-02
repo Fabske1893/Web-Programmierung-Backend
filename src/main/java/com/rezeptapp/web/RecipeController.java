@@ -170,12 +170,7 @@ public ResponseEntity<MessageAnswer> createRecipe(@RequestBody RecipeImpl recipe
     } else {
         return new ResponseEntity<>(new MessageAnswer("Rezept konnte nicht gespeichert werden."), HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
-
-//USER MANAGEMENT
-
-    
-
+}
 
     @PostMapping("/register")
     public ResponseEntity<MessageAnswer> registerUser(@RequestBody UserImpl user) {
