@@ -12,12 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import com.rezeptapp.data.implemented.EmailService;
 import com.rezeptapp.data.implemented.RecipeImpl;
 import java.util.List;
 import com.rezeptapp.web.api.ShoppingListRequest;
-import org.springframework.web.bind.annotation.CrossOrigin;
 
 
 
@@ -159,18 +159,67 @@ public ResponseEntity<MessageAnswer> sendShoppingListByEmail(@RequestBody Shoppi
     }
 
 
-    @PostMapping("/recipes")
-public ResponseEntity<MessageAnswer> createRecipe(@RequestBody RecipeImpl recipe) {
+    @PostMapping(value = "/recipes", consumes = {"multipart/form-data"})
+public ResponseEntity<MessageAnswer> createRecipe(
+        @RequestPart("titel") String title,
+        @RequestPart("zutaten") String zutatenJson,
+        @RequestPart("zubereitung") String instructions,
+        @RequestPart("difficulty") String difficulty,
+        @RequestPart("category") String category,
+        @RequestPart("likes") int likes,
+        @RequestPart("created_by") String createdBy,
+        @RequestPart(value = "image", required = false) MultipartFile image) {
 
-    
-    boolean success = recipeManager.addRecipe(recipe);
+    try {
+        //wen bild da speichern
+        String imageUrl = null;
+        if (image != null && !image.isEmpty()) {
+            String uploadDir = "uploads/";
+            java.nio.file.Path uploadPath = java.nio.file.Paths.get(uploadDir);
 
-    if (success) {
-        return new ResponseEntity<>(new MessageAnswer("Rezept erfolgreich erstellt."), HttpStatus.CREATED);
-    } else {
-        return new ResponseEntity<>(new MessageAnswer("Rezept konnte nicht gespeichert werden."), HttpStatus.INTERNAL_SERVER_ERROR);
+            if (!java.nio.file.Files.exists(uploadPath)) {
+                java.nio.file.Files.createDirectories(uploadPath);
+            }
+
+            String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
+            java.nio.file.Path filePath = uploadPath.resolve(fileName);
+            java.nio.file.Files.copy(image.getInputStream(), filePath);
+            imageUrl = "/uploads/" + fileName; // Pfad speichern
+        }
+
+        // Zutaten JSON in Liste umwandeln
+        com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+        List<com.rezeptapp.data.model.Ingredient> ingredients =
+            mapper.readValue(zutatenJson,
+                mapper.getTypeFactory().constructCollectionType(List.class, com.rezeptapp.data.model.Ingredient.class));
+
+        // Rezeptob erstellen
+        com.rezeptapp.data.implemented.RecipeImpl recipe = new com.rezeptapp.data.implemented.RecipeImpl();
+        recipe.setTitle(title);
+        recipe.setIngredients(ingredients);
+        recipe.setInstructions(instructions);
+        recipe.setDifficulty(difficulty);
+        recipe.setCategory(category);
+        recipe.setLikes(likes);
+        recipe.setImageUrl(imageUrl); 
+        
+
+        boolean success = recipeManager.addRecipe(recipe);
+
+        if (success) {
+            return new ResponseEntity<>(new MessageAnswer("Rezept erfolgreich erstellt."), HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>(new MessageAnswer("Rezept konnte nicht gespeichert werden."), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        return new ResponseEntity<>(new MessageAnswer("Fehler beim Erstellen des Rezepts: " + e.getMessage()),
+                HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
+
+
 
 @PutMapping("/recipes/{id}/like")
 public ResponseEntity<MessageAnswer> likeRecipe(@PathVariable int id) {

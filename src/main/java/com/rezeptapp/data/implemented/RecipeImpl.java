@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class RecipeImpl implements Recipe {
     private int id; 
     private String name;
-    private String imageUrl;  
+    private String pictureUrl;  
     private List<Ingredient> ingredients = new ArrayList<>();
     private String instructions;
     private String difficultyLevel;  
@@ -50,15 +50,13 @@ public class RecipeImpl implements Recipe {
     public int getLikes() { return this.likes; }
     @Override
     public void setLikes(int likes) { this.likes = likes; }
+    @Override
+    public String getImageUrl() { return this.pictureUrl; }
+    @Override
+    public void setImageUrl(String imageUrl) { this.pictureUrl = imageUrl; }
 
-    public String getImageUrl() {
-    return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-    this.imageUrl = imageUrl;
+  
 }
 
     
     
-}

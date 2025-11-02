@@ -18,4 +18,4 @@ public class Application implements WebMvcConfigurer{
         
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("file:uploads/");
-}
+}}
