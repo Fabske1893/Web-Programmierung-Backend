@@ -159,64 +159,67 @@ public ResponseEntity<MessageAnswer> sendShoppingListByEmail(@RequestBody Shoppi
     }
 
 
-    @PostMapping(value = "/recipes", consumes = {"multipart/form-data"})
-public ResponseEntity<MessageAnswer> createRecipe(
-
-        @RequestPart("titel") String title,
-        @RequestPart("zutaten") String zutatenJson,
-        @RequestPart("zubereitung") String instructions,
-        @RequestPart("difficulty") String difficulty,
-        @RequestPart("category") String category,
-        @RequestPart(value = "image", required = false) MultipartFile image,
-        @RequestPart("likes") int likes,
-        @RequestPart("created_by") String createdBy) {
+   @PostMapping(value = "/recipes", consumes = {"multipart/form-data"})
+    public ResponseEntity<MessageAnswer> createRecipe(
+        @RequestPart(value = "titel", required = false) String title,
+        @RequestPart(value = "zutaten", required = false) String zutatenJson,
+        @RequestPart(value = "zubereitung", required = false) String instructions,
+        @RequestPart(value = "difficulty", required = false) String difficulty,
+        @RequestPart(value = "category", required = false) String category,
+        @RequestPart(value = "likes", required = false) Integer likes,
+        @RequestPart(value = "created_by", required = false) String createdBy,
+        @RequestPart(value = "image", required = false) MultipartFile image) {
 
     try {
-        //wen bild da speichern
+        System.out.println("📥 Multipart Request empfangen:");
+        System.out.println("Titel: " + title);
+        System.out.println("Zutaten: " + zutatenJson);
+        System.out.println("Zubereitung: " + instructions);
+        System.out.println("Datei: " + (image != null ? image.getOriginalFilename() : "keine Datei"));
+
+        
         String imageUrl = null;
         if (image != null && !image.isEmpty()) {
             String uploadDir = "uploads/";
             java.nio.file.Path uploadPath = java.nio.file.Paths.get(uploadDir);
-
             if (!java.nio.file.Files.exists(uploadPath)) {
                 java.nio.file.Files.createDirectories(uploadPath);
             }
-
             String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
             java.nio.file.Path filePath = uploadPath.resolve(fileName);
             java.nio.file.Files.copy(image.getInputStream(), filePath);
-            imageUrl = "/uploads/" + fileName; // Pfad speichern
+            imageUrl = "/uploads/" + fileName;
         }
 
-        // Zutaten JSON in Liste umwandeln
+        
         com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
-        List<com.rezeptapp.data.model.Ingredient> ingredients =
-            mapper.readValue(zutatenJson,
-                mapper.getTypeFactory().constructCollectionType(List.class, com.rezeptapp.data.model.Ingredient.class));
+        List<com.rezeptapp.data.model.Ingredient> ingredients = null;
+        if (zutatenJson != null && !zutatenJson.isEmpty()) {
+            ingredients = mapper.readValue(
+                zutatenJson,
+                mapper.getTypeFactory().constructCollectionType(List.class, com.rezeptapp.data.model.Ingredient.class)
+            );
+        }
 
-        // Rezeptob erstellen
+        
         com.rezeptapp.data.implemented.RecipeImpl recipe = new com.rezeptapp.data.implemented.RecipeImpl();
         recipe.setTitle(title);
         recipe.setIngredients(ingredients);
         recipe.setInstructions(instructions);
         recipe.setDifficulty(difficulty);
         recipe.setCategory(category);
-        recipe.setLikes(likes);
-        recipe.setImageUrl(imageUrl); 
-        
+        recipe.setLikes(likes != null ? likes : 0);
+        recipe.setImageUrl(imageUrl);
 
         boolean success = recipeManager.addRecipe(recipe);
-
         if (success) {
             return new ResponseEntity<>(new MessageAnswer("Rezept erfolgreich erstellt."), HttpStatus.CREATED);
         } else {
             return new ResponseEntity<>(new MessageAnswer("Rezept konnte nicht gespeichert werden."), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
     } catch (Exception e) {
         e.printStackTrace();
-        return new ResponseEntity<>(new MessageAnswer("Fehler beim Erstellen des Rezepts: " + e.getMessage()),
-                HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(new MessageAnswer("Fehler beim Erstellen des Rezepts: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
 
