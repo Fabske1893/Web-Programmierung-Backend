@@ -1,16 +1,25 @@
 package com.rezeptapp.data.implemented;
+
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+import java.util.concurrent.CompletableFuture;
 import java.util.Properties;
 import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 
+@Service  // ← Spring-managed Bean machen
 public class EmailService {
 
-    //Daten vom Versender
     private static final String EMAIL = "rezepteapp123@gmail.com";
     private static final String APP_PASSWORT = "duiw erkc vacr wkix";
 
-    public void sendRecipeEmail(String empfaenger, String betreff, String text) {
+    @Async  // ← Non-blocking execution
+    public CompletableFuture<Boolean> sendRecipeEmailAsync(
+            String empfaenger, 
+            String betreff, 
+            String text) {
+        
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");
@@ -32,15 +41,18 @@ public class EmailService {
             nachricht.setText(text);
             Transport.send(nachricht);
             System.out.println("E-Mail erfolgreich gesendet an: " + empfaenger);
-            
-
+            return CompletableFuture.completedFuture(true);
         } catch (MessagingException e) {
             e.printStackTrace();
             System.err.println("Fehler beim Senden der E-Mail: " + e.getMessage());
+            return CompletableFuture.completedFuture(false);
         }
     }
-
     
+    // Legacy-Methode für Abwärtskompatibilität
+    public void sendRecipeEmail(String empfaenger, String betreff, String text) {
+        sendRecipeEmailAsync(empfaenger, betreff, text);
+    }
 }
 
-    
+

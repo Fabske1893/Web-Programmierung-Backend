@@ -33,6 +33,9 @@ public class RecipeAndUserController {
     private final RecipeManager recipeManager;
     private final UserManager userManager;
 
+    @Autowired
+    private EmailService emailService;  // Spring injiziert jetzt
+
     
     @Autowired
     public RecipeAndUserController(RecipeManager recipeManager, UserManager userManager) {
@@ -86,64 +89,33 @@ public ResponseEntity<MessageAnswer> sendShoppingListByEmail(@RequestBody Shoppi
     @PostMapping("/recipes/{id}/send-email")
     public ResponseEntity<MessageAnswer> sendRecipeByEmail(
         @PathVariable int id,
-        @RequestParam String token) { 
-
- 
+        @RequestParam String token) {
+    
     String recipientEmail = userManager.getEmailFromToken(token);
-
     if (recipientEmail == null) {
-        return new ResponseEntity<>(new MessageAnswer("Ungültiger Token oder Benutzer nicht eingeloggt."), HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(new MessageAnswer("Ungültiger Token"), HttpStatus.UNAUTHORIZED);
     }
+    
     Optional<Recipe> recipeOpt = recipeManager.getRecipeById(id);
-
     if (recipeOpt.isPresent()) {
         Recipe recipe = recipeOpt.get();
-        try {
-            EmailService emailService = new EmailService(); 
-            String emailSubject = "Rezept: " + recipe.getTitle();
-            
-           StringBuilder ingredientsText = new StringBuilder();
-            if (recipe.getIngredients() != null && !recipe.getIngredients().isEmpty()) { 
-                for (Ingredient ingredient : recipe.getIngredients()) {
-                    String amountStr = ingredient.getAmount() > 0 ? String.valueOf(ingredient.getAmount()) : "";
-                    String unitStr = (ingredient.getUnit() != null && !ingredient.getUnit().isEmpty()) ? ingredient.getUnit() : ""; 
-                    String nameStr = ingredient.getName() != null ? ingredient.getName() : ""; 
-                    
-
-                   
-                    String line = "- ";
-                    if (!amountStr.isEmpty()) {
-                        line += amountStr + " ";
-                    }
-                    if (!unitStr.isEmpty()) {
-                        line += unitStr + " ";
-                    }
-                    line += nameStr; 
-                    ingredientsText.append(line.trim()).append("\n"); 
-                }
-                 if (ingredientsText.length() > 0) {
-                    ingredientsText.setLength(ingredientsText.length() - 1);
-                 }
-
-            } else {
-                ingredientsText.append("Keine Zutaten angegeben.");
-            }
-            String emailText = "Hallo!\n\nHier ist das Rezept für " + recipe.getTitle() + ":\n\n" +
-                               "Zutaten:\n" + ingredientsText.toString() + "\n\n" + 
-                               "Zubereitung:\n" + recipe.getInstructions() + "\n\n" +
-                               "Viel Spaß beim Kochen!";
-
-            emailService.sendRecipeEmail(recipientEmail, emailSubject, emailText);
-
-            return new ResponseEntity<>(new MessageAnswer("Rezept erfolgreich an " + recipientEmail + " gesendet."), HttpStatus.OK);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(new MessageAnswer("E-Mail konnte nicht gesendet werden."), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    } else {
-        return new ResponseEntity<>(new MessageAnswer("Rezept nicht gefunden."), HttpStatus.NOT_FOUND);
+        
+        // Async senden - Request blockiert nicht!
+        emailService.sendRecipeEmailAsync(
+            recipientEmail, 
+            "Rezept: " + recipe.getTitle(), 
+            buildEmailText(recipe)
+        );
+        
+        // Sofortige Antwort an Client
+        return new ResponseEntity<>(
+            new MessageAnswer("E-Mail wird versendet..."), 
+            HttpStatus.ACCEPTED  // 202 Accepted
+        );
     }
-    }
+    return new ResponseEntity<>(new MessageAnswer("Rezept nicht gefunden"), HttpStatus.NOT_FOUND);
+}
+   
 
 
     @GetMapping("/recipes")
