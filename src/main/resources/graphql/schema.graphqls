@@ -7,8 +7,8 @@ type Recipe {
     title: String
     difficulty: String
     category: String
-        instructions: String
-        ingredients: [Ingredient]
+    instructions: String
+    ingredients: [Ingredient]
 }
 
 
