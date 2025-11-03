@@ -165,21 +165,44 @@ public ResponseEntity<MessageAnswer> createRecipe(@RequestBody RecipeImpl recipe
 
     @PostMapping("/register")
     public ResponseEntity<MessageAnswer> registerUser(@RequestBody UserImpl user) {
-        boolean success = userManager.registerUser(user);
-        if (success) {
-            return new ResponseEntity<>(new MessageAnswer("Benutzer erfolgreich registriert."), HttpStatus.CREATED);
-        } else {
-            return new ResponseEntity<>(new MessageAnswer("Benutzer mit dieser E-Mail existiert bereits."), HttpStatus.CONFLICT);
+        try {
+            // Validierung der Eingaben
+            if (user == null || user.getEmail() == null || user.getEmail().trim().isEmpty() ||
+                user.getPassword() == null || user.getPassword().trim().isEmpty() ||
+                user.getUsername() == null || user.getUsername().trim().isEmpty()) {
+                return new ResponseEntity<>(new MessageAnswer("Bitte fülle alle Felder korrekt aus."), HttpStatus.BAD_REQUEST);
+            }
+            
+            boolean success = userManager.registerUser(user);
+            if (success) {
+                return new ResponseEntity<>(new MessageAnswer("Benutzer erfolgreich registriert."), HttpStatus.CREATED);
+            } else {
+                return new ResponseEntity<>(new MessageAnswer("Benutzer mit dieser E-Mail existiert bereits."), HttpStatus.CONFLICT);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(new MessageAnswer("Registrierung fehlgeschlagen: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PostMapping("/login")
     public ResponseEntity<tokenAnswer> loginUser(@RequestBody UserImpl user) {
-        String token = userManager.loginUser(user.getEmail(), user.getPassword());
-        if (!token.equals("OFF")) {
-            return new ResponseEntity<>(new tokenAnswer(token), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        try {
+            // Validierung der Eingaben
+            if (user == null || user.getEmail() == null || user.getEmail().trim().isEmpty() ||
+                user.getPassword() == null || user.getPassword().trim().isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+            
+            String token = userManager.loginUser(user.getEmail(), user.getPassword());
+            if (!token.equals("OFF")) {
+                return new ResponseEntity<>(new tokenAnswer(token), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
