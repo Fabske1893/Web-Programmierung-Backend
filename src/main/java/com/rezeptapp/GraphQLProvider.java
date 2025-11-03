@@ -44,6 +44,7 @@ public class GraphQLProvider {
     return RuntimeWiring.newRuntimeWiring()
        .type(newTypeWiring("Query")
             .dataFetcher("recipes", graphQLDataFetchers.getRecipesDataFetcher())
+            .dataFetcher("myRecipes", graphQLDataFetchers.getMyRecipesDataFetcher())
             .dataFetcher("recipe", graphQLDataFetchers.getRecipeByIdDataFetcher())
             .dataFetcher("me", graphQLDataFetchers.getMeDataFetcher()) 
         )

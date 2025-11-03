@@ -24,13 +24,15 @@ public class GraphQLEndpoint {
         this.graphQL = graphQL;
     }
 
-    @PostMapping("/graphql")
+    @PostMapping(consumes = "application/json", produces = "application/json")
     public ResponseEntity<Object> graphql(
             @RequestBody Map<String, Object> request,
             @RequestHeader(value = "Authorization", required = false) String authorizationHeader) {
         
         String query = (String) request.get("query");
-        Map<String, Object> variables = (Map<String, Object>) request.get("variables");
+        @SuppressWarnings("unchecked")
+        Map<String, Object> variables = (Map<String, Object>) request.getOrDefault("variables", new LinkedHashMap<>());
+        String operationName = (String) request.get("operationName");
         
         // Context mit Authorization Header erstellen
         Map<String, Object> context = new HashMap<>();
@@ -41,25 +43,11 @@ public class GraphQLEndpoint {
         // ExecutionInput mit Context erstellen
         ExecutionInput executionInput = ExecutionInput.newExecutionInput()
                 .query(query)
-                .variables(variables != null ? variables : new HashMap<>())
+                .operationName(operationName)
+                .variables(variables)
                 .context(context)
                 .build();
         
-        ExecutionResult executionResult = graphQL.execute(executionInput);
-        
-    @PostMapping(consumes = "application/json", produces = "application/json")
-    public ResponseEntity<Object> graphql(@RequestBody Map<String, Object> request) {
-        String query = (String) request.get("query");
-        @SuppressWarnings("unchecked")
-        Map<String, Object> variables = (Map<String, Object>) request.getOrDefault("variables", new LinkedHashMap<>());
-        String operationName = (String) request.get("operationName");
-
-        ExecutionInput executionInput = ExecutionInput.newExecutionInput()
-                .query(query)
-                .operationName(operationName)
-                .variables(variables)
-                .build();
-
         ExecutionResult executionResult = graphQL.execute(executionInput);
 
         Map<String, Object> result = new LinkedHashMap<>();
@@ -70,5 +58,4 @@ public class GraphQLEndpoint {
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
-}
 }
