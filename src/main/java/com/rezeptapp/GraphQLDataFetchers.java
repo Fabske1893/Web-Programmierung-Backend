@@ -94,6 +94,7 @@ public class GraphQLDataFetchers {
             if (input.get("instructions") != null) recipe.setInstructions((String) input.get("instructions"));
             if (input.get("difficulty") != null) recipe.setDifficulty((String) input.get("difficulty"));
             if (input.get("category") != null) recipe.setCategory((String) input.get("category"));
+            if(input.get("created_by") != null) recipe.setCreatedBy((String) input.get("created_by"));
 
             @SuppressWarnings("unchecked")
             List<Map<String, Object>> ingInputs = (List<Map<String, Object>>) input.get("ingredients");
@@ -118,11 +119,18 @@ public class GraphQLDataFetchers {
     }
 
 public DataFetcher<Map<String, Object>> getMeDataFetcher() {
-    return env -> Map.of(
-        "id", 1,
-        "username", "Luca",
-        "email", "luca@example.com"
-    );
+    return env -> {
+        // Versuche den Token aus dem Context zu extrahieren und den echten Benutzer zurückzugeben
+        String token = getTokenFromContext(env);
+        if (token != null && !token.isEmpty() && !"OFF".equals(token)) {
+            java.util.Map<String, Object> user = userManager.getUserByToken(token);
+            if (user != null) {
+                return user;
+            }
+        }
+        // Fallback: leeres Objekt
+        return java.util.Map.of();
+    };
 }
 
 }
