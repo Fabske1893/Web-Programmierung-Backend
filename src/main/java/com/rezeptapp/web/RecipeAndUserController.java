@@ -19,6 +19,7 @@ import java.util.List;
 import com.rezeptapp.web.api.ShoppingListRequest;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.scheduling.annotation.Async;
 
 
@@ -119,17 +120,16 @@ public ResponseEntity<MessageAnswer> sendShoppingListByEmail(@RequestBody Shoppi
 
 
     @GetMapping("/recipes")
-    @Cacheable("recipes")
+    @Cacheable("recipes")  // Cache für bessere Performance
     public List<Recipe> getAllRecipes() {
         return recipeManager.getAllRecipes();
     }
 
 
     @PostMapping("/recipes")
-public ResponseEntity<MessageAnswer> createRecipe(@RequestBody RecipeImpl recipe) {
-
-    
-    boolean success = recipeManager.addRecipe(recipe);
+    @CacheEvict(value = "recipes", allEntries = true)  // Cache leeren beim Erstellen
+    public ResponseEntity<MessageAnswer> createRecipe(@RequestBody RecipeImpl recipe) {
+        boolean success = recipeManager.addRecipe(recipe);
 
     if (success) {
         return new ResponseEntity<>(new MessageAnswer("Rezept erfolgreich erstellt."), HttpStatus.CREATED);
@@ -182,6 +182,7 @@ public ResponseEntity<MessageAnswer> createRecipe(@RequestBody RecipeImpl recipe
     }
 
     @DeleteMapping("/recipes/{id}")
+    @CacheEvict(value = "recipes", allEntries = true)  // Cache leeren beim Löschen
     public ResponseEntity<MessageAnswer> deleteRecipe(@PathVariable int id) {
         boolean success = recipeManager.deleteRecipe(id);
         if (success) {
