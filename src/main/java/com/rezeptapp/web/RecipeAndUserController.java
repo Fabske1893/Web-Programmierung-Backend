@@ -18,6 +18,8 @@ import com.rezeptapp.data.implemented.RecipeImpl;
 import java.util.List;
 import com.rezeptapp.web.api.ShoppingListRequest;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.scheduling.annotation.Async;
 
 
 
@@ -145,6 +147,7 @@ public ResponseEntity<MessageAnswer> sendShoppingListByEmail(@RequestBody Shoppi
 
 
     @GetMapping("/recipes")
+    @Cacheable("recipes")
     public List<Recipe> getAllRecipes() {
         return recipeManager.getAllRecipes();
     }
@@ -238,4 +241,3 @@ public ResponseEntity<MessageAnswer> createRecipe(@RequestBody RecipeImpl recipe
 
 
 
-    
