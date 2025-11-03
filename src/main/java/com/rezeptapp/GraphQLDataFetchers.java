@@ -94,7 +94,6 @@ public class GraphQLDataFetchers {
             if (input.get("instructions") != null) recipe.setInstructions((String) input.get("instructions"));
             if (input.get("difficulty") != null) recipe.setDifficulty((String) input.get("difficulty"));
             if (input.get("category") != null) recipe.setCategory((String) input.get("category"));
-            if (input.get("likes") != null) recipe.setLikes(((Number) input.get("likes")).intValue());
 
             @SuppressWarnings("unchecked")
             List<Map<String, Object>> ingInputs = (List<Map<String, Object>>) input.get("ingredients");
@@ -107,18 +106,6 @@ public class GraphQLDataFetchers {
                 }
             }
             return recipeManager.addRecipe(recipe);
-        };
-    }
-
-    // Mutation likeRecipe
-    public DataFetcher<Boolean> likeRecipeDataFetcher() {
-        return env -> {
-            Integer id = env.getArgument("id");
-            Optional<Recipe> rOpt = recipeManager.getRecipeById(id);
-            if (rOpt.isEmpty()) return false;
-            Recipe r = rOpt.get();
-            r.setLikes(r.getLikes() + 1);
-            return recipeManager.updateRecipe(r);
         };
     }
 
