@@ -88,8 +88,18 @@ public class PostgresUserManagerImpl implements UserManager {
 
     @Override
     public boolean logoffUser(String email) {
-       
-        return true;
+        String sql = "UPDATE users SET token = 'OFF' WHERE email = ?";
+        
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, email);
+            int affectedRows = pstmt.executeUpdate();
+            return affectedRows > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Override

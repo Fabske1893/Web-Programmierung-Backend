@@ -210,6 +210,35 @@ public ResponseEntity<MessageAnswer> sendShoppingListByEmail(@RequestBody Shoppi
             return new ResponseEntity<>(result, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @DeleteMapping("/logoff")
+    public ResponseEntity<MessageAnswer> logoffUser(@RequestBody java.util.Map<String, String> request) {
+        try {
+            String token = request.get("token");
+            
+            // Validierung
+            if (token == null || token.trim().isEmpty() || token.equals("OFF")) {
+                return new ResponseEntity<>(new MessageAnswer("Ungültiger Token."), HttpStatus.BAD_REQUEST);
+            }
+            
+            // Email vom Token holen
+            String email = userManager.getEmailFromToken(token);
+            if (email == null) {
+                return new ResponseEntity<>(new MessageAnswer("Benutzer nicht gefunden oder bereits abgemeldet."), HttpStatus.NOT_FOUND);
+            }
+            
+            // Benutzer abmelden
+            boolean success = userManager.logoffUser(email);
+            if (success) {
+                return new ResponseEntity<>(new MessageAnswer("Erfolgreich abgemeldet."), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(new MessageAnswer("Abmeldung fehlgeschlagen."), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(new MessageAnswer("Abmeldung fehlgeschlagen: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
 
 
